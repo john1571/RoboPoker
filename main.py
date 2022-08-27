@@ -61,6 +61,10 @@ class Hand:
         self.diamonds = []
         self.spades = []
         self.clubs = []
+        self.four = []
+        self.set = []
+        self.pair = []
+        self.singles = []
         self.has_straight_flush = False
         self.has_four_of_a_kind = False
         self.has_full_house = False
@@ -73,14 +77,23 @@ class Hand:
         self.cards.append(card)
         if not table:
             self.cards_in_hand.append(card)
-        if card.suit == "♥":
+
+        if card.suit == HEART:
             self.hearts.append(card.rank)
-        elif card.suit == "♦":
+        elif card.suit == DIAMOND:
             self.diamonds.append(card.rank)
-        elif card.suit == "♠":
+        elif card.suit == SPADE:
             self.spades.append(card.rank)
         else:
             self.clubs.append(card.rank)
+        if card.value not in self.singles:
+            self.singles.append(card.value)
+        elif card.value not in self.pair:
+            self.pair.append(card.value)
+        elif card.value not in self.set:
+            self.set.append(card.value)
+        else:
+            self.four.append(card.value)
 
         if self.value_dictionary.get(card.rank):
             self.value_dictionary[card.rank] += 1
@@ -153,19 +166,19 @@ class Hand:
         if self.has_pair():
             pairs = self.has_pair()
             if len(pairs) > 1:
-                high_pair_value = max(x[0].value for x in pairs)
-                other_pair_value = max(x[0].value for x in pairs)
+                high_pair_value = max(pairs)
+                other_pair_value = min(pairs)
                 if len(pairs) > 2:
                     for x in pairs:
-                        if x[0].value != other_pair_value and x[0].value != high_pair_value:
-                            other_pair_value = x[0].value
+                        if x != other_pair_value and x != high_pair_value:
+                            other_pair_value = x
                             break
                 self.value += TWO_PAIR
                 self.value += high_pair_value
                 self.value += other_pair_value
                 return self.value
             self.value = PAIR
-            self.value += self.has_pair()[0][0].value
+            self.value += self.has_pair()[0]
             return self.value
         else:
             return max(x.value for x in self.cards)
@@ -184,21 +197,29 @@ class Hand:
 
     def has_pair(self):
         pairs = []
-        for card in self.cards:
-            for other in self.cards:
-                if card != other and card.rank == other.rank:
-                    pairs.append((card, other))
+        for rank in self.pair:
+            if rank in self.set or self.four:
+                if len(self.set) > 1:
+                    pairs.append(min(self.set))
+                continue
+            pairs.append(rank)
         return pairs
 
     def has_set(self):
-        pairs = self.has_pair()
         sets = []
-        if pairs:
-            for pair in pairs:
-                for card in self.cards:
-                    if card not in pair and card.rank == pair[0].rank:
-                        sets.append((pair[0], pair[1], card))
+        for value in self.set:
+            if value in self.four:
+                continue
+            if len(self.set) > 1:
+                sets.append(max(self.set))
+            else:
+                sets.append(value)
         return sets
+
+    def has_four(self):
+        if self.four:
+            return self.four[0]
+        return None
 
     def has_straight(self):
         if '10' in self.value_dictionary.keys():
