@@ -117,6 +117,8 @@ class Hand:
         elif self.has_set():
             print("THREE!")
             #print(self.has_set())
+        elif len(self.has_pair()) > 1:
+            print("TWO PAIR!")
         elif self.has_pair():
             print("PAIR!")
             #print(self.has_pair())
@@ -379,6 +381,30 @@ def deal(num_players):
     table._river()
     for hand in hands:
         hand.show(table)
+
+class Actions:
+    fold = 0
+    call = 1
+    bet = 2
+    check = 3
+
+class Player:
+    def __init__(self, name, chips):
+        self.name = name
+        self.chips = chips
+        self.hand = Hand(self.name)
+
+    def add_card(self, card, table=None):
+        if not self.hand:
+            self.hand.add_card(card, table)
+
+    def act(self, actions, bet):  # actions = dictionary: name:(action, amount)
+        if bet > 5:
+            return Actions.fold, 0
+        else:
+            return Actions.call, bet
+
+
 
 def print_hi(name):
     deal(5)
