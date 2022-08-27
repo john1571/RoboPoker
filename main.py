@@ -19,7 +19,7 @@ suits = ['♥', '♣', '♦', '♠']
 values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
           'J': 11, 'Q': 12, 'K': 13, 'A': 14,
 }
-def string_to_value(string):
+def rank_to_value(string):
     return values[string]
 
 STRAIGHT_FLUSH = 1000
@@ -32,10 +32,12 @@ TWO_PAIR = 400
 PAIR = 300
 
 class Card:
-    def __init__(self, suit, value):
+    def __init__(self, suit, rank):
         self.suit = suit
-        self.value = value
+        self.rank = rank
+        self.value = rank_to_value(rank)
         self.color = ""
+
         if self.suit == HEART:
             self.color = bcolors.cHEART
         elif self.suit == CLUB:
@@ -46,7 +48,7 @@ class Card:
             self.color = bcolors.cSPADE
 
     def print_with_color(self):
-        print(self.color + self.value + self.suit + bcolors.ENDC, end='\t')
+        print(self.color + self.rank + self.suit + bcolors.ENDC, end='\t')
 
 
 
@@ -72,18 +74,18 @@ class Hand:
         if not table:
             self.cards_in_hand.append(card)
         if card.suit == "♥":
-            self.hearts.append(card.value)
+            self.hearts.append(card.rank)
         elif card.suit == "♦":
-            self.diamonds.append(card.value)
+            self.diamonds.append(card.rank)
         elif card.suit == "♠":
-            self.spades.append(card.value)
+            self.spades.append(card.rank)
         else:
-            self.clubs.append(card.value)
+            self.clubs.append(card.rank)
 
-        if self.value_dictionary.get(card.value):
-            self.value_dictionary[card.value] += 1
+        if self.value_dictionary.get(card.rank):
+            self.value_dictionary[card.rank] += 1
         else:
-            self.value_dictionary[card.value] = 1
+            self.value_dictionary[card.rank] = 1
 
 
     def show(self, table):
@@ -120,7 +122,7 @@ class Hand:
                 self.value += STRAIGHT
                 self.has_full_house = True
             for value in flush_cards:
-                self.value += string_to_value(value)
+                self.value += rank_to_value(value)
             return self.value
         if self.has_straight():
             self.value += STRAIGHT
@@ -128,7 +130,7 @@ class Hand:
             return self.value
         if self.has_set():
             sets = self.has_set()
-            high_set_value = max(string_to_value(x[0][0]) for x in sets)
+            high_set_value = max(x[0][0].value for x in sets)
             if len(sets) > 1:
                 self.has_full_house = True
                 self.value += FULL_HOUSE
@@ -151,22 +153,22 @@ class Hand:
         if self.has_pair():
             pairs = self.has_pair()
             if len(pairs) > 1:
-                high_pair_value = max(string_to_value(x[0].value]) for x in pairs)
-                other_pair_value = max(string_to_value(x[0][0]) for x in pairs)
+                high_pair_value = max(x[0].value for x in pairs)
+                other_pair_value = max(x[0].value for x in pairs)
                 if len(pairs) > 2:
                     for x in pairs:
-                        if x[0] != other_pair_value and x[0] != high_pair_value:
-                            other_pair_value = x[0]
+                        if x[0].value != other_pair_value and x[0].value != high_pair_value:
+                            other_pair_value = x[0].value
                             break
                 self.value += TWO_PAIR
                 self.value += high_pair_value
                 self.value += other_pair_value
                 return self.value
             self.value = PAIR
-            self.value += string_to_value(self.has_pair()[0][0].value)
+            self.value += self.has_pair()[0][0].value
             return self.value
         else:
-            return max(string_to_value(x.value) for x in self.cards)
+            return max(x.value for x in self.cards)
 
 
     def has_flush(self):
@@ -184,7 +186,7 @@ class Hand:
         pairs = []
         for card in self.cards:
             for other in self.cards:
-                if card != other and card.value == other.value:
+                if card != other and card.rank == other.rank:
                     pairs.append((card, other))
         return pairs
 
@@ -194,7 +196,7 @@ class Hand:
         if pairs:
             for pair in pairs:
                 for card in self.cards:
-                    if card not in pair and card.value == pair[0].value:
+                    if card not in pair and card.rank == pair[0].rank:
                         sets.append((pair[0], pair[1], card))
         return sets
 
