@@ -143,7 +143,7 @@ class Hand:
             return self.value
         if self.has_set():
             sets = self.has_set()
-            high_set_value = max(x[0][0].value for x in sets)
+            high_set_value = max(sets)
             if len(sets) > 1:
                 self.has_full_house = True
                 self.value += FULL_HOUSE
@@ -153,7 +153,7 @@ class Hand:
                 pairs = self.has_pair()
                 other_pair_values = []
                 for x in pairs:
-                    if x[0] != high_set_value:
+                    if x != high_set_value:
                         other_pair_values.append(x)
                 if other_pair_values:
                     self.has_full_house = True
