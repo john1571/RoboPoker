@@ -403,6 +403,7 @@ class Actions:
     call = 1
     bet = 2
     check = 3
+    allin = 4
 
 class Player:
     def __init__(self, name, chips):
@@ -418,7 +419,13 @@ class Player:
         if bet > 5:
             return Actions.fold, 0
         else:
-            return Actions.call, bet
+            if self.chips > bet:
+                self.chips -= bet
+                return Actions.call, bet
+            else:
+                bet = self.chips
+                self.chips = 0
+                return Actions.allin, bet
 
 
 
