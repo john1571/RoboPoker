@@ -411,24 +411,44 @@ class Player:
         self.chips = chips
         self.hand = Hand(self.name)
 
+    def bet(self, amount):
+        self.chips -= amount
+        return amount
+
     def add_card(self, card, table=None):
         if not self.hand:
             self.hand.add_card(card, table)
 
+    def status(self, table):
+        self.hand.show(table)
+        print(self.chips)
+
     def act(self, actions, bet):  # actions = dictionary: name:(action, amount)
+        if bet == 0:
+            return actions.bet, self.bet(5)
         if bet > 5:
             return Actions.fold, 0
         else:
             if self.chips > bet:
-                self.chips -= bet
-                return Actions.call, bet
+                return Actions.call, self.bet(bet)
             else:
-                bet = self.chips
-                self.chips = 0
-                return Actions.allin, bet
+                return Actions.allin, self.bet(self.chips)
 
 
+def play(num_starting_players):
+    players = {}
+    for player in range(0, num_starting_players):
+        players[names[player]] = Player(names[player], 1000)
 
+
+    for i in range(num_starting_players):
+
+            hands.append(Hand(names[i]))
+            hands[i].add_card(deck.pop(0))
+
+        if(i >= num_players):
+            hands[i-num_players].add_card(deck.pop(0))
+        i += 1
 
 def print_hi(name):
     deal(5)
