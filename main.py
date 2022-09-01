@@ -354,49 +354,35 @@ def getDeck():
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isiah', 'John']
 
-def deal(num_players):
-    winning = "", 0
+def deal(players):
     deck = getDeck()
     print(deck.pop(0))
-    if num_players > 12:
-        return
     hands = []
-    for i in range(0, num_players*2):
-        if(i < num_players):
-            hands.append(Hand(names[i]))
-            hands[i].add_card(deck.pop(0))
+    for i in range (0, 1):
+        for player in players:
+            player.add_card(deck.pop(0))
 
-        if(i >= num_players):
-            hands[i-num_players].add_card(deck.pop(0))
-        i += 1
     table = Table(deck)
     for hand in hands:
         hand.show(table)
-        if hand.value >= winning[1]:
-            winning = hand.name, hand.value
-    print(winning)
 
+def flop(table, hands):
     table.flop()
     for hand in hands:
         hand.show(table)
-        if hand.value >= winning[1]:
-            winning = hand.name, hand.value
-    print(winning)
 
+def turn(table, hands):
     table._turn()
     for hand in hands:
         hand.show(table)
-        if hand.value >= winning[1]:
-            winning = hand.name, hand.value
-    print(winning)
 
+def river(table, hands):
     table._river()
     for hand in hands:
         hand.show(table)
-        if hand.value >= winning[1]:
-            winning = hand.name, hand.value
-    print("WON: ", winning)
 
+def betting():
+    # later
 
 class Actions:
     fold = 0
