@@ -58,7 +58,7 @@ def deal(players, table):
     deck = pack.getDeck()
     print(deck.pop(0))
     hands = []
-    for i in range (0, 1):
+    for i in range(0, 2):
         for player in players:
             player.add_card(deck.pop(0))
 
@@ -79,6 +79,11 @@ def river(table, hands):
     table._river()
     for hand in hands:
         hand.show(table)
+
+def end(players):
+    Table(pack.getDeck())
+    for player in players:
+        player.reset()
 
 #def betting():
     # later
@@ -106,8 +111,7 @@ class Player:
         return amount
 
     def add_card(self, card, table=None):
-        if not self.hand:
-            self.hand.add_card(card, table)
+        self.hand.add_card(card, table)
 
     def status(self, table):
         self.hand.show(table)
@@ -118,6 +122,8 @@ class Player:
             return Actions.fold, self.fold()
         return Actions.bet, self.bet(5)
 
+    def reset(self):
+        self.hand = Hands.Hand(self.name)
 
 def betting(players):
     bet = 0
@@ -161,7 +167,8 @@ def play(num_starting_players):
         for player in players:
             if player.name in winners:
                 player.chips += (pot/num_split)
-            player.status()
+            player.status(table)
+        end(players)
 
 def print_hi(name):
     play(5)

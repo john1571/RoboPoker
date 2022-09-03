@@ -95,7 +95,7 @@ class Hand:
                 self.value += STRAIGHT
                 self.has_full_house = True
             for value in flush_cards:
-                self.value += deck.rank_to_value(value)
+                self.value += pack.rank_to_value(value)
             return self.value
         if self.has_straight():
             self.value += STRAIGHT
