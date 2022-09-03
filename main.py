@@ -5,7 +5,7 @@
 
 import pack
 import hand_helpers as Hands
-
+import Logging
 
 class Table:
     def __init__(self, deck):
@@ -125,6 +125,7 @@ class Player:
     def reset(self):
         self.hand = Hands.Hand(self.name)
 
+
 def betting(players):
     pot = 0
     bet = 0
@@ -142,7 +143,7 @@ def play(num_starting_players):
         players.append(Player(names[player], 1000))
 
 
-    for round in range(0, 10):
+    for round in range(0, 100):
         table = Table(pack.getDeck())
         deal(players, table)
         hands = []
@@ -172,6 +173,7 @@ def play(num_starting_players):
                 player.chips += (pot/num_split)
             player.status(table)
         end(players)
+        Logging.Log_chips(players)
 
 def print_hi(name):
     play(5)
