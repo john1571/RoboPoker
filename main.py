@@ -126,12 +126,14 @@ class Player:
         self.hand = Hands.Hand(self.name)
 
 def betting(players):
+    pot = 0
     bet = 0
     for player in players:
         if player.folded == True:
             continue
         action, bet = player.act(bet)
-    return bet
+        pot += bet
+    return pot
 
 
 def play(num_starting_players):
@@ -160,6 +162,7 @@ def play(num_starting_players):
             if hand.get_value(table) > best_hand_value:
                 winners = []
                 winners.append(hand.name)
+                best_hand_value = hand.get_value(table)
             elif hand.get_value(table) == best_hand_value:
                 winners.append(hand.name)
 
