@@ -142,8 +142,7 @@ def play(num_starting_players):
     for player in range(0, num_starting_players):
         players.append(Player(names[player], 1000))
 
-
-    for round in range(0, 100):
+    for round in range(0, 1000):
         table = Table(pack.getDeck())
         deal(players, table)
         hands = []
@@ -174,6 +173,12 @@ def play(num_starting_players):
             player.status(table)
         end(players)
         Logging.Log_chips(players)
+        ended = False
+        for player in players:
+            if player.chips < 0:
+                ended = True
+        if ended:
+            break
 
 def print_hi(name):
     play(5)
