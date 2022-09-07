@@ -2,6 +2,7 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import random
 
 import pack
 import hand_helpers as Hands
@@ -49,7 +50,19 @@ class Table:
         self.river.print_with_color()
         print("******")
 
-
+    def show(self):
+        show_string = ""
+        if (self.flop1):
+            show_string += self.flop1.log_string() + ','
+        if (self.flop2):
+            show_string += self.flop2.log_string() + ','
+        if (self.flop3):
+            show_string += self.flop3.log_string() + ','
+        if (self.turn):
+            show_string += self.turn.log_string() + ','
+        if (self.river):
+            show_string += self.river.log_string() + ','
+        return show_string
 
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isiah', 'John']
@@ -117,10 +130,22 @@ class Player:
         self.hand.show(table)
         print(self.chips)
 
-    def act(self, bet):  # actions = dictionary: name:(action, amount)
-        if self.folded or bet > 5:
-            return Actions.fold, self.fold()
-        return Actions.bet, self.bet(5)
+    def act(self, bet, my_bet):  # actions = dictionary: name:(action, amount)
+        if bet > 0:
+            if self.folded:
+                return Actions.fold, self.fold()
+            if my_bet != 0 and bet > my_bet * 5:
+                return Actions.fold, self.fold()
+            if random.randint(0, 10) == 8:
+                my_bet = (bet * 2) - my_bet
+                return Actions.bet, self.bet(my_bet)
+            return Actions.bet, self.bet(bet - my_bet)
+        else:
+            if random.randint(0, 10) > 5:
+                my_bet = 5
+            else:
+                my_bet = 0
+            return Actions.bet, self.bet(my_bet)
 
     def reset(self):
         self.hand = Hands.Hand(self.name)
@@ -133,16 +158,28 @@ def betting(players):
     bets = {} # player, bet
     for player in players:
         bets[player.name] = 0
-    for player in players:
-        if player.folded == True:
-            continue
-        action, bet = player.act(bet)
-        if bet < current_bet:
-            player.folded = True
-            continue
-        if bet > 0:
+    Betting_done = False
+    while not Betting_done:
+        for player in players:
+            if player.folded:
+                continue
+            if current_bet > 0 and bets[player.name] == current_bet:
+                continue
+            action, bet = player.act(current_bet, bets[player.name])
+            pot += bet
             bets[player.name] += bet
-        pot += bet
+            if bets[player.name] < current_bet:
+                player.folded = True
+                bets.__delitem__(player.name)
+                continue
+            elif bets[player.name] >= current_bet * 2:
+                current_bet = bets[player.name]
+        Betting_done = True
+        for bet in bets.values():
+            if bet < current_bet:
+                Betting_done = False
+                break
+    print("pot: " + str(pot))
     return pot
 
 
@@ -180,8 +217,8 @@ def play(num_starting_players):
             if player.name in winners:
                 player.chips += (pot/num_split)
             player.status(table)
+        Logging.Log_chips(players, table)
         end(players)
-        Logging.Log_chips(players)
         ended = False
         for player in players:
             if player.chips < 0:

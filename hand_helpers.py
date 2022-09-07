@@ -58,6 +58,11 @@ class Hand:
         else:
             self.value_dictionary[card.rank] = 1
 
+    def log(self):
+        string = ''
+        for card in self.cards_in_hand:
+            string += card.rank + card.suit + " "
+        return string
 
     def show(self, table):
         print("%s: " % self.name, end='\t')
