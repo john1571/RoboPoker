@@ -128,11 +128,20 @@ class Player:
 
 def betting(players):
     pot = 0
+    current_bet = 0
     bet = 0
+    bets = {} # player, bet
+    for player in players:
+        bets[player.name] = 0
     for player in players:
         if player.folded == True:
             continue
         action, bet = player.act(bet)
+        if bet < current_bet:
+            player.folded = True
+            continue
+        if bet > 0:
+            bets[player.name] += bet
         pot += bet
     return pot
 
