@@ -61,7 +61,8 @@ class Hand:
     def log(self):
         string = ''
         for card in self.cards_in_hand:
-            string += card.rank + card.suit + " "
+            string += card.log_string() + " "
+        string += ','
         return string
 
     def show(self, table):

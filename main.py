@@ -162,6 +162,8 @@ def betting(players):
     while not Betting_done:
         for player in players:
             if player.folded:
+                if player.name in bets.keys():
+                    bets.__delitem__(player.name)
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
