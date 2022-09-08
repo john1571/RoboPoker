@@ -89,11 +89,12 @@ class Hand:
         else:
             print("Hi card")
 
-    def get_value(self, table):
+    def get_value(self, table=None):
         self.value = 0
-        table_cards = get_table_cards(table)
-        for card in table_cards:
-            self.cards.append(card)
+        if table:
+            table_cards = get_table_cards(table)
+            for card in table_cards:
+                self.cards.append(card)
         flush_cards = self.has_flush()
         if flush_cards:
             self.value += FLUSH
