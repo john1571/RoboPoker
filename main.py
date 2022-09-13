@@ -164,7 +164,6 @@ def play(num_starting_players):
         table = Table(pack.getDeck())
         players = []
         for person in all_players:
-            person.status(table)
             if not person.busted:
                 person.new_hand()
                 players.append(person)
@@ -196,6 +195,8 @@ def play(num_starting_players):
                 player.chips += (pot/num_split)
 
         Logging.Log_chips(players, table)
+        for person in all_players:
+            person.status(table)
         end(players)
         ended = False
         for player in players:
