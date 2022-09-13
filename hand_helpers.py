@@ -95,6 +95,8 @@ class Hand:
             table_cards = get_table_cards(table)
             for card in table_cards:
                 self.cards.append(card)
+        if len(self.cards) <= 0:
+            return 0
         flush_cards = self.has_flush()
         if flush_cards:
             self.value += FLUSH

@@ -7,6 +7,7 @@ import random
 import pack
 import hand_helpers as Hands
 import Logging
+import Bots.Register as Register
 
 class Table:
     def __init__(self, deck):
@@ -96,7 +97,7 @@ def river(table, hands):
 def end(players):
     Table(pack.getDeck())
     for player in players:
-        player.reset()
+        player.new_hand()
 
 #def betting():
     # later
@@ -108,47 +109,14 @@ class Actions:
     check = 3
     allin = 4
 
-class Player:
-    def __init__(self, name, chips):
-        self.name = name
-        self.chips = chips
-        self.hand = Hands.Hand(self.name)
-        self.folded = False
 
-    def fold(self):
-        self.folded = True
-        return 0
-
-    def bet(self, amount):
-        self.chips -= amount
-        return amount
-
-    def add_card(self, card, table=None):
-        self.hand.add_card(card, table)
-
-    def status(self, table):
-        self.hand.show(table)
-        print(self.chips)
-
-    def act(self, bet, my_bet):  # actions = dictionary: name:(action, amount)
-        if bet > 0:
-            if self.folded:
-                return Actions.fold, self.fold()
-            if my_bet != 0 and bet > my_bet * 5:
-                return Actions.fold, self.fold()
-            if random.randint(0, 10) == 8:
-                my_bet = (bet * 2) - my_bet
-                return Actions.bet, self.bet(my_bet)
-            return Actions.bet, self.bet(bet - my_bet)
-        else:
-            if random.randint(0, 10) > 5:
-                my_bet = 5
-            else:
-                my_bet = 0
-            return Actions.bet, self.bet(my_bet)
-
-    def reset(self):
-        self.hand = Hands.Hand(self.name)
+def fold_player(player, players, bets):
+    if player:
+        player.fold()
+    if player in players:
+        players.remove(player)
+    if player.name in bets.keys():
+        bets.__delitem__(player.name)
 
 
 def betting(players):
@@ -162,17 +130,18 @@ def betting(players):
     while not Betting_done:
         for player in players:
             if player.folded:
-                if player.name in bets.keys():
-                    bets.__delitem__(player.name)
+                fold_player(player, players, bets)
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
-            action, bet = player.act(current_bet, bets[player.name])
+            bet = player.act(current_bet, bets[player.name])
+            if bet is None:
+                fold_player(player, players, bets)
+                continue
             pot += bet
             bets[player.name] += bet
             if bets[player.name] < current_bet:
-                player.folded = True
-                bets.__delitem__(player.name)
+                fold_player(player, players, bets)
                 continue
             elif bets[player.name] >= current_bet * 2:
                 current_bet = bets[player.name]
@@ -186,12 +155,19 @@ def betting(players):
 
 
 def play(num_starting_players):
-    players = []
+    all_players = []
     for player in range(0, num_starting_players):
-        players.append(Player(names[player], 1000))
+        i = random.randint(0, len(Register.register())-1)
+        all_players.append(Register.register()[i](names[player], 1000))
 
     for round in range(0, 1000):
         table = Table(pack.getDeck())
+        players = []
+        for person in all_players:
+            person.status(table)
+            if not person.busted:
+                person.new_hand()
+                players.append(person)
         deal(players, table)
         hands = []
         pot = 0
@@ -218,7 +194,7 @@ def play(num_starting_players):
         for player in players:
             if player.name in winners:
                 player.chips += (pot/num_split)
-            player.status(table)
+
         Logging.Log_chips(players, table)
         end(players)
         ended = False
