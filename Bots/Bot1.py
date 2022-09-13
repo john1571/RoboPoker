@@ -23,3 +23,6 @@ class Bot1(bp.Player):
             else:
                 my_bet = 0
             return self.bet(my_bet)
+
+    def bot_type(self):
+        return "bot1"

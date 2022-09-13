@@ -50,6 +50,10 @@ class Player:
 
     def status(self, table):
         self.hand.show(table)
+        print(self.bot_type())
         print(self.chips)
+
+    def bot_type(self):
+        return "base_player"
 
 
