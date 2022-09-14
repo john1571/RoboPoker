@@ -3,10 +3,6 @@ import base_player as bp
 import random
 
 class Bot2(bp.Player):
-    def bet(self, amount):
-        self.chips -= amount
-        return amount
-
     def act(self, bet, my_bet, actions=None):  # actions = dictionary: name:(action, amount)
         if self.hand.get_value() > 310:
             if bet > 20:

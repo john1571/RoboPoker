@@ -38,12 +38,17 @@ class Player:
         self.chips -= amount
         return amount
 
-    def act(self, bet, my_bet, actions=None):
+    def act(self, bet, my_bet, table=None, actions=None):
         if bet - my_bet > 50:
             return None
         else:
             return self.bet(bet - my_bet)
 
+    def outer_act(self, bet, my_bet, table=None, actions=None):
+        new_bet = self.act(bet, my_bet, table, actions)
+        if new_bet:
+            self.chips -= new_bet
+        return new_bet
 
     def add_card(self, card, table=None):
         self.hand.add_card(card, table)

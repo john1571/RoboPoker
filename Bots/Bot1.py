@@ -3,10 +3,6 @@ import base_player as bp
 import random
 
 class Bot1(bp.Player):
-    def bet(self, amount):
-        self.chips -= amount
-        return amount
-
     def act(self, bet, my_bet, actions=None):  # actions = dictionary: name:(action, amount)
         if bet > 0:
             if self.folded:
