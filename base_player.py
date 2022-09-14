@@ -18,13 +18,17 @@ class Player:
         self.chips = chips
         self.busted = False
         self.folded = False
+        self.all_in = False
         self.hand = hands.Hand(self.id)
+
 
     def new_hand(self):
         self.folded = False
         self.hand = hands.Hand(self.id)
         if self.chips < 0:
             self.bust()
+        else:
+            self.all_in = False
 
     def bust(self):
         self.busted = True
@@ -43,6 +47,11 @@ class Player:
     def outer_act(self, bet, my_bet, table, actions, pot):
         new_bet = self.act(bet, my_bet, table, actions, pot)
         if new_bet:
+            if new_bet > self.chips:
+                self.all_in = True
+                new_bet = self.chips
+                self.chips = 0
+                return new_bet
             self.chips -= new_bet
         return new_bet
 

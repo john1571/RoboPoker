@@ -119,7 +119,8 @@ def fold_player(player, players, bets):
         bets.__delitem__(player.name)
 
 
-def betting(players, table, pot):
+def betting(players, table, pot, side_pots):
+    loc_side_pots = {}
     current_bet = 0
     bet = 0
     bets = {} # player, bet
@@ -127,10 +128,13 @@ def betting(players, table, pot):
         bets[player.name] = 0
     Betting_done = False
     actions = {}
+    side_pots = {}
     while not Betting_done:
         for player in players:
             if player.folded:
                 fold_player(player, players, bets)
+                continue
+            if player.all_in:
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
@@ -141,15 +145,34 @@ def betting(players, table, pot):
             pot += bet
             bets[player.name] += bet
             if bets[player.name] < current_bet:
-                fold_player(player, players, bets)
-                continue
+                if player.all_in:
+                    loc_side_pots[player.name] = bets[player.name]
+                    continue
+                else:
+                    fold_player(player, players, bets)
+                    continue
             elif bets[player.name] >= current_bet * 2:
                 current_bet = bets[player.name]
+            elif player.all_in:
+                current_bet = bets[player.name]
+            else:
+                assert False
         Betting_done = True
-        for bet in bets.values():
-            if bet < current_bet:
+        for player in players:
+            if bets[player.name] < current_bet and not player.all_in:
                 Betting_done = False
                 break
+    for player in players:
+        if player.name in loc_side_pots.keys():
+            players_chips = loc_side_pots[player.name]
+            total_side_pot = 0
+            for bet in bets.values():
+                if bet <= players_chips:
+                    total_side_pot += bet
+                else:
+                    total_side_pot += players_chips
+            if player.name not in side_pots.keys():
+                side_pots[player.name] = total_side_pot
     print("pot: " + str(pot))
     return pot
 
@@ -171,25 +194,35 @@ def play(num_starting_players):
         pot = 0
         for player in players:
             hands.append(player.hand)
-        pot = betting(players, table, pot)
+        side_pots = {}
+        pot = betting(players, table, pot, side_pots)
         flop(table, hands)
-        pot = betting(players, table, pot)
+        pot = betting(players, table, pot, side_pots)
         turn(table, hands)
-        pot = betting(players, table, pot)
+        pot = betting(players, table, pot, side_pots)
         river(table, hands)
-        pot = betting(players, table, pot)
+        pot = betting(players, table, pot, side_pots)
 
         best_hand_value = 0
         winners = []
-        for hand in hands:
-            if hand.get_value(table) > best_hand_value:
+        for player in players:
+            if player.folded:
+                continue
+            if player.hand.get_value(table) > best_hand_value:
                 winners = []
-                winners.append(hand.name)
-                best_hand_value = hand.get_value(table)
-            elif hand.get_value(table) == best_hand_value:
-                winners.append(hand.name)
+                winners.append(player.name)
+                best_hand_value = player.hand.get_value(table)
+            elif player.hand.get_value(table) == best_hand_value:
+                winners.append(player.name)
 
         num_split = len(winners)
+        for player in players:
+            if player.name in winners:
+                if player.name in side_pots.keys():
+                    player.chips =  side_pots[player.name]/num_split
+                    num_split -= 1
+                    pot -= side_pots[player.name]
+                    winners.remove(player.name)
         for player in players:
             if player.name in winners:
                 player.chips += (pot/num_split)
