@@ -119,14 +119,14 @@ def fold_player(player, players, bets):
         bets.__delitem__(player.name)
 
 
-def betting(players):
-    pot = 0
+def betting(players, table, pot):
     current_bet = 0
     bet = 0
     bets = {} # player, bet
     for player in players:
         bets[player.name] = 0
     Betting_done = False
+    actions = {}
     while not Betting_done:
         for player in players:
             if player.folded:
@@ -134,7 +134,7 @@ def betting(players):
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
-            bet = player.act(current_bet, bets[player.name])
+            bet = player.outer_act(current_bet, bets[player.name], table, actions, pot)
             if bet is None:
                 fold_player(player, players, bets)
                 continue
@@ -152,7 +152,6 @@ def betting(players):
                 break
     print("pot: " + str(pot))
     return pot
-
 
 def play(num_starting_players):
     all_players = []
@@ -172,13 +171,14 @@ def play(num_starting_players):
         pot = 0
         for player in players:
             hands.append(player.hand)
-        pot += betting(players)
+        pot = betting(players, table, pot)
         flop(table, hands)
-        pot += betting(players)
+        pot = betting(players, table, pot)
         turn(table, hands)
-        pot += betting(players)
+        pot = betting(players, table, pot)
         river(table, hands)
-        pot += betting(players)
+        pot = betting(players, table, pot)
+
         best_hand_value = 0
         winners = []
         for hand in hands:

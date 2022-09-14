@@ -34,18 +34,14 @@ class Player:
         self.folded = True
         return None
 
-    def bet(self, amount):
-        self.chips -= amount
-        return amount
-
-    def act(self, bet, my_bet, table=None, actions=None):
+    def act(self, bet, my_bet, table=None, actions=None, pot=None):
         if bet - my_bet > 50:
             return None
         else:
-            return self.bet(bet - my_bet)
+            return bet - my_bet
 
-    def outer_act(self, bet, my_bet, table=None, actions=None):
-        new_bet = self.act(bet, my_bet, table, actions)
+    def outer_act(self, bet, my_bet, table, actions, pot):
+        new_bet = self.act(bet, my_bet, table, actions, pot)
         if new_bet:
             self.chips -= new_bet
         return new_bet
