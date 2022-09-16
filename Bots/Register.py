@@ -1,4 +1,4 @@
-import base_player
+from Bots import base_player
 import Bots.Bot1
 import Bots.Bot2
 

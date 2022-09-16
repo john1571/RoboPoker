@@ -36,7 +36,7 @@ def payout_internal(pot, side_pots, players, winners):
 def payout(pot, side_pots, players, table):
     loc_players = players
     rewarded_players = []
-    while pot > 1 and len(loc_players) > 1:
+    while pot > 1 and len(loc_players) > 0:
         winners = get_winners(loc_players, rewarded_players, table)
         pot = payout_internal(pot, side_pots, loc_players, winners)
         for rewarded in winners:

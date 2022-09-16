@@ -47,7 +47,7 @@ class Player:
     def outer_act(self, bet, my_bet, table, actions, pot):
         new_bet = self.act(bet, my_bet, table, actions, pot)
         if new_bet:
-            if new_bet > self.chips:
+            if new_bet >= self.chips:
                 self.all_in = True
                 new_bet = self.chips
                 self.chips = 0

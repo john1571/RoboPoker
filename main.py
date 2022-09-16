@@ -8,6 +8,7 @@ import pack
 import hand_helpers as Hands
 import Logging
 import Bots.Register as Register
+import Bots.user as user
 import game_play as gp
 
 class Table:
@@ -176,6 +177,8 @@ def play(num_starting_players):
     for player in range(0, num_starting_players):
         i = random.randint(0, len(Register.register())-1)
         all_players.append(Register.register()[i](names[player], 1000))
+    if False:
+        all_players.append(user.User(input("Your name:"), 1000))
 
     for round in range(0, 1000):
         table = Table(pack.getDeck())

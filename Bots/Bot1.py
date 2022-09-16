@@ -1,5 +1,4 @@
-
-import base_player as bp
+from Bots import base_player as bp
 import random
 
 class Bot1(bp.Player):
