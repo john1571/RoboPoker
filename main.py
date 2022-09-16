@@ -10,6 +10,7 @@ import Logging
 import Bots.Register as Register
 import Bots.user as user
 import game_play as gp
+import globals
 
 class Table:
     def __init__(self, deck):
@@ -108,6 +109,8 @@ class Actions:
 
 
 def fold_player(player, players, bets):
+    if globals.g_user_playing:
+        print(player.name + " folds")
     if player:
         player.fold()
     if player in players:
@@ -172,39 +175,52 @@ def betting(players, table, pot, side_pots):
     print("pot: " + str(pot))
     return pot, side_pots
 
+
 def play(num_starting_players):
     all_players = []
     for player in range(0, num_starting_players):
         i = random.randint(0, len(Register.register())-1)
         all_players.append(Register.register()[i](names[player], 1000))
-    if False:
+    if globals.g_user_playing:
         all_players.append(user.User(input("Your name:"), 1000))
 
     for round in range(0, 1000):
+        if globals.g_user_playing:
+            input("press ENTER for new round ")
+            print("\n*****NEW ROUND*****")
         table = Table(pack.getDeck())
+        if round == 0:
+            Logging.Log_chips(all_players, table)
         players = []
         for person in all_players:
             if not person.busted:
                 person.new_hand()
                 players.append(person)
         deal(players)
-        show_all_hands(players, table)
+        if not globals.g_user_playing:
+            show_all_hands(players, table)
         pot = 0
         side_pots = {}
+
         pot, side_pots = betting(players, table, pot, side_pots)
         flop(table)
-        show_all_hands(players, table)
+        if not globals.g_user_playing:
+            show_all_hands(players, table)
 
         pot, side_pots = betting(players, table, pot, side_pots)
         turn(table)
-        show_all_hands(players, table)
+        if not globals.g_user_playing:
+            show_all_hands(players, table)
 
         pot, side_pots = betting(players, table, pot, side_pots)
         river(table)
-        show_all_hands(players, table)
+        if not globals.g_user_playing:
+            show_all_hands(players, table)
 
         pot, side_pots = betting(players, table, pot, side_pots)
-
+        if globals.g_user_playing:
+            print("\nSHOWDOWN:")
+        show_all_hands(players, table)
         payout = pot
         gp.payout(payout, side_pots, players, table)
 

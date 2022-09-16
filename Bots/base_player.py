@@ -1,4 +1,6 @@
 import hand_helpers as hands
+import globals
+import time
 
 class Actions:
     fold = 0
@@ -45,14 +47,23 @@ class Player:
             return bet - my_bet
 
     def outer_act(self, bet, my_bet, table, actions, pot):
+        if globals.g_user_playing:
+            time.sleep(1)
         new_bet = self.act(bet, my_bet, table, actions, pot)
         if new_bet:
             if new_bet >= self.chips:
                 self.all_in = True
                 new_bet = self.chips
                 self.chips = 0
+                if globals.g_user_playing:
+                    print(self.name + " goes all in with " + str(new_bet + my_bet))
                 return new_bet
             self.chips -= new_bet
+        if globals.g_user_playing:
+            if new_bet is 0:
+                print(self.name + " checks")
+            elif new_bet:
+                print(self.name + " bets " + str(new_bet + my_bet))
         return new_bet
 
     def add_card(self, card, table=None):
@@ -64,7 +75,6 @@ class Player:
         print(self.chips)
 
     def show_hand(self, table):
-        print(self.name, end='\t')
         if self.folded:
             print("FOLDED")
         elif self.busted:

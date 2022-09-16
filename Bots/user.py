@@ -3,9 +3,9 @@ import random
 
 class User(bp.Player):
     def act(self, bet, my_bet, table=None, actions=None, pot=None):  # actions = dictionary: name:(action, amount)
-        self.hand.show(table)
-        print("Pot is %i\nBet is %i\nyour bet is %i\nyour chips: %i" % (pot, bet, my_bet, self.chips))
-        response = input('integer for a bet, "All" for all in, anything else will fold')
+        self.show_hand(table)
+        print("Pot is %i\nMinimun bet to stay in: %i\nyour chips: %i" % (pot, bet - my_bet, self.chips))
+        response = input('integer for a bet, "All" for all in, anything else will fold: ')
         if str(response) == "All":
             return self.chips
         try:
