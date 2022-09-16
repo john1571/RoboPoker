@@ -208,14 +208,17 @@ def play(num_starting_players):
         payout = pot
         gp.payout(payout, side_pots, players, table)
 
-        Logging.Log_chips(players, table)
+        Logging.Log_chips(all_players, table)
         for person in all_players:
             person.status(table)
         end(players)
         ended = False
-        for player in players:
-            if player.chips < 0:
-                ended = True
+        num_busted = 0
+        for player in all_players:
+            if player.busted:
+                num_busted += 1
+                if num_busted == len(all_players) - 1:
+                    ended = True
         if ended:
             break
 
