@@ -8,6 +8,7 @@ import pack
 import hand_helpers as Hands
 import Logging
 import Bots.Register as Register
+import game_play as gp
 
 class Table:
     def __init__(self, deck):
@@ -68,31 +69,26 @@ class Table:
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isiah', 'John']
 
-def deal(players, table):
+def deal(players):
     deck = pack.getDeck()
     print(deck.pop(0))
-    hands = []
     for i in range(0, 2):
         for player in players:
             player.add_card(deck.pop(0))
 
-    for hand in hands:
-        hand.show(table)
 
-def flop(table, hands):
+def flop(table):
     table.flop()
-    for hand in hands:
-        hand.show(table)
 
-def turn(table, hands):
+def turn(table):
     table._turn()
-    for hand in hands:
-        hand.show(table)
 
-def river(table, hands):
+def river(table):
     table._river()
-    for hand in hands:
-        hand.show(table)
+
+def show_all_hands(players, table):
+    for player in players:
+        player.show_hand(table)
 
 def end(players):
     Table(pack.getDeck())
@@ -155,26 +151,25 @@ def betting(players, table, pot, side_pots):
                 current_bet = bets[player.name]
             elif player.all_in:
                 current_bet = bets[player.name]
-            else:
+                if player.name not in loc_side_pots.keys():
+                    loc_side_pots[player.name] = bets[player.name]
+            elif bets[player.name] != current_bet:
                 assert False
         Betting_done = True
         for player in players:
             if bets[player.name] < current_bet and not player.all_in:
                 Betting_done = False
                 break
-    for player in players:
-        if player.name in loc_side_pots.keys():
-            players_chips = loc_side_pots[player.name]
-            total_side_pot = 0
-            for bet in bets.values():
-                if bet <= players_chips:
-                    total_side_pot += bet
-                else:
-                    total_side_pot += players_chips
-            if player.name not in side_pots.keys():
-                side_pots[player.name] = total_side_pot
+    for name in loc_side_pots.keys():
+        side_pot_value = 0
+        for bet in bets.values():
+            if bet > loc_side_pots[name]:
+                side_pot_value += loc_side_pots[name]
+            else:
+                side_pot_value += bet
+        side_pots[name] = side_pot_value
     print("pot: " + str(pot))
-    return pot
+    return pot, side_pots
 
 def play(num_starting_players):
     all_players = []
@@ -189,43 +184,26 @@ def play(num_starting_players):
             if not person.busted:
                 person.new_hand()
                 players.append(person)
-        deal(players, table)
-        hands = []
+        deal(players)
+        show_all_hands(players, table)
         pot = 0
-        for player in players:
-            hands.append(player.hand)
         side_pots = {}
-        pot = betting(players, table, pot, side_pots)
-        flop(table, hands)
-        pot = betting(players, table, pot, side_pots)
-        turn(table, hands)
-        pot = betting(players, table, pot, side_pots)
-        river(table, hands)
-        pot = betting(players, table, pot, side_pots)
+        pot, side_pots = betting(players, table, pot, side_pots)
+        flop(table)
+        show_all_hands(players, table)
 
-        best_hand_value = 0
-        winners = []
-        for player in players:
-            if player.folded:
-                continue
-            if player.hand.get_value(table) > best_hand_value:
-                winners = []
-                winners.append(player.name)
-                best_hand_value = player.hand.get_value(table)
-            elif player.hand.get_value(table) == best_hand_value:
-                winners.append(player.name)
+        pot, side_pots = betting(players, table, pot, side_pots)
+        turn(table)
+        show_all_hands(players, table)
 
-        num_split = len(winners)
-        for player in players:
-            if player.name in winners:
-                if player.name in side_pots.keys():
-                    player.chips =  side_pots[player.name]/num_split
-                    num_split -= 1
-                    pot -= side_pots[player.name]
-                    winners.remove(player.name)
-        for player in players:
-            if player.name in winners:
-                player.chips += (pot/num_split)
+        pot, side_pots = betting(players, table, pot, side_pots)
+        river(table)
+        show_all_hands(players, table)
+
+        pot, side_pots = betting(players, table, pot, side_pots)
+
+        payout = pot
+        gp.payout(payout, side_pots, players, table)
 
         Logging.Log_chips(players, table)
         for person in all_players:

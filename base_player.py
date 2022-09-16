@@ -25,7 +25,7 @@ class Player:
     def new_hand(self):
         self.folded = False
         self.hand = hands.Hand(self.id)
-        if self.chips < 0:
+        if self.chips <= 0:
             self.bust()
         else:
             self.all_in = False
@@ -59,9 +59,18 @@ class Player:
         self.hand.add_card(card, table)
 
     def status(self, table):
-        self.hand.show(table)
+        self.show_hand(table)
         print(self.bot_type())
         print(self.chips)
+
+    def show_hand(self, table):
+        print(self.name, end='\t')
+        if self.folded:
+            print("FOLDED")
+        elif self.busted:
+            print("BUSTED")
+        else:
+            self.hand.show(table)
 
     def bot_type(self):
         return "base_player"
