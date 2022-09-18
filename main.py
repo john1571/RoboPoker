@@ -11,6 +11,7 @@ import Bots.Register as Register
 import Bots.user as user
 import game_play as gp
 import globals
+import Console_Interface as CI
 
 class Table:
     def __init__(self, deck):
@@ -131,6 +132,7 @@ def betting(players, table, pot, side_pots):
     side_pots = {}
     while not Betting_done:
         for player in players:
+            CI.print_status(players, bets, player, pot, table, globals.g_user, "")
             if player.folded:
                 fold_player(player, players, bets)
                 continue
@@ -147,10 +149,9 @@ def betting(players, table, pot, side_pots):
             if bets[player.name] < current_bet:
                 if player.all_in:
                     loc_side_pots[player.name] = bets[player.name]
-                    continue
                 else:
                     fold_player(player, players, bets)
-                    continue
+                continue
             elif bets[player.name] >= current_bet * 2:
                 current_bet = bets[player.name]
             elif player.all_in:
@@ -182,7 +183,8 @@ def play(num_starting_players):
         i = random.randint(0, len(Register.register())-1)
         all_players.append(Register.register()[i](names[player], 1000))
     if globals.g_user_playing:
-        all_players.append(user.User(input("Your name:"), 1000))
+        globals.g_user = user.User(input("Your name:"), 1000)
+        all_players.append(globals.g_user)
 
     for round in range(0, 1000):
         if globals.g_user_playing:
@@ -196,6 +198,7 @@ def play(num_starting_players):
             if not person.busted:
                 person.new_hand()
                 players.append(person)
+
         deal(players)
         if not globals.g_user_playing:
             show_all_hands(players, table)

@@ -74,13 +74,10 @@ class Player:
         print(self.bot_type())
         print(self.chips)
 
-    def show_hand(self, table):
-        if self.folded:
-            print("FOLDED")
-        elif self.busted:
-            print("BUSTED")
-        else:
-            self.hand.show(table)
+    def show_hand(self, table, print_now=False):
+        if print_now:
+            print(self.hand.show(table))
+        return self.hand.show(table)
 
     def bot_type(self):
         return "base_player"

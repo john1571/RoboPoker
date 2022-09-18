@@ -65,29 +65,33 @@ class Hand:
         string += ','
         return string
 
-    def show(self, table):
-        print("%s: " % self.name, end='\t')
+    def show(self, table, print_now=False):
+        print_string = ""
+        print_string += "%s: \t" % self.name
         for card in self.cards_in_hand:
             card.print_with_color()
         for card in get_table_cards(table):
             self.add_card(card, table)
-        print(self.get_value(table), end='\t')
+        print_string += str(self.get_value(table)) + '\t'
         if self.has_flush():
-            print("FLUSH:", end='\t')
-            print(self.has_flush())
+            print_string += "FLUSH"
+            #print_string += str(self.has_flush())
         elif self.has_straight():
-            print("STRAIGHT!")
+            print_string += "STRAIGHT!"
             #print(self.has_straight())
         elif self.has_set():
-            print("THREE!")
+            print_string += "THREE!"
             #print(self.has_set())
         elif len(self.has_pair()) > 1:
-            print("TWO PAIR!")
+            print_string += "TWO PAIR!"
         elif self.has_pair():
-            print("PAIR!")
+            print_string += "PAIR!"
             #print(self.has_pair())
         else:
-            print("Hi card")
+            print_string += "Hi card"
+        if print_now:
+            print(print_string)
+        return print_string
 
     def get_value(self, table=None):
         self.value = 0
