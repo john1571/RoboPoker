@@ -21,9 +21,12 @@ def Log_chips(players, table, pot):
             log.write(',' + table.show() + ',')
         for player in players:
             if player.busted:
-                log.write("busted,")
+                log.write("busted")
             elif player.folded:
                 log.write("folded - ")
-            elif player.hand:
+            if player.hand:
                 log.write(player.hand.log())
+            else:
+                log.write(',')
+
         log.write('\n')

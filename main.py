@@ -72,13 +72,11 @@ class Table:
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isiah', 'John']
 
-def deal(players):
-    deck = pack.getDeck()
-    print(deck.pop(0))
+def deal(players, table):
+    print(table.deck.pop(0))
     for i in range(0, 2):
         for player in players:
-            player.add_card(deck.pop(0))
-
+            player.add_card(table.deck.pop(0))
 
 def flop(table):
     table.flop()
@@ -199,7 +197,7 @@ def play(num_starting_players):
                 person.new_hand()
                 players.append(person)
 
-        deal(players)
+        deal(players, table)
         if not globals.g_user_playing:
             show_all_hands(players, table)
         pot = 0

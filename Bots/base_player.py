@@ -84,4 +84,11 @@ class Player:
     def bot_type(self):
         return "base_player"
 
+    def get_hand_value(self):
+        if self.hand:
+            self.hand.get_value()
 
+    def get_num_cards(self):
+        if self.hand:
+            return len(self.hand.cards)
+        return 0
