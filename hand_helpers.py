@@ -1,4 +1,4 @@
-import pack
+import pack as p
 
 STRAIGHT_FLUSH = 1000
 FOUR_OF_A_KIND = 900
@@ -9,6 +9,61 @@ SET = 500
 TWO_PAIR = 400
 PAIR = 300
 
+
+Shorthand = {
+    '2h': p.Card('♥', '2'),
+    '4h': p.Card('♥', '4'),
+    '3h': p.Card('♥', '3'),
+    '5h': p.Card('♥', '5'),
+    '6h': p.Card('♥', '6'),
+    '7h': p.Card('♥', '7'),
+    '8h': p.Card('♥', '8'),
+    '9h': p.Card('♥', '9'),
+    '10h': p.Card('♥', '10'),
+    'Jh': p.Card('♥', 'J'),
+    'Qh': p.Card('♥', 'Q'),
+    'Kh': p.Card('♥', 'K'),
+    'Ah': p.Card('♥', 'A'),
+    '2c': p.Card('♣', '2'),
+    '3c': p.Card('♣', '3'),
+    '4c': p.Card('♣', '4'),
+    '5c': p.Card('♣', '5'),
+    '6c': p.Card('♣', '6'),
+    '7c': p.Card('♣', '7'),
+    '8c': p.Card('♣', '8'),
+    '9c': p.Card('♣', '9'),
+    '10c': p.Card('♣', '10'),
+    'Jc': p.Card('♣', 'J'),
+    'Qc': p.Card('♣', 'Q'),
+    'Kc': p.Card('♣', 'K'),
+    'Ac': p.Card('♣', 'A'),
+    '2d': p.Card('♦', '2'),
+    '3d': p.Card('♦', '3'),
+    '4d': p.Card('♦', '4'),
+    '5d': p.Card('♦', '5'),
+    '6d': p.Card('♦', '6'),
+    '7d': p.Card('♦', '7'),
+    '8d': p.Card('♦', '8'),
+    '9d': p.Card('♦', '9'),
+    '10d': p.Card('♦', '10'),
+    'Jd': p.Card('♦', 'J'),
+    'Qd': p.Card('♦', 'Q'),
+    'Kd': p.Card('♦', 'K'),
+    'Ad': p.Card('♦', 'A'),
+    '2s': p.Card('♠', '2'),
+    '3s': p.Card('♠', '3'),
+    '4s': p.Card('♠', '4'),
+    '5s': p.Card('♠', '5'),
+    '6s': p.Card('♠', '6'),
+    '7s': p.Card('♠', '7'),
+    '8s': p.Card('♠', '8'),
+    '9s': p.Card('♠', '9'),
+    '10s': p.Card('♠', '10'),
+    'Js': p.Card('♠', 'J'),
+    'Qs': p.Card('♠', 'Q'),
+    'Ks': p.Card('♠', 'K'),
+    'As': p.Card('♠', 'A'),
+}
 
 class Hand:
     def __init__(self, name):
@@ -36,11 +91,11 @@ class Hand:
         if not table:
             self.cards_in_hand.append(card)
 
-        if card.suit == pack.HEART:
+        if card.suit == p.HEART:
             self.hearts.append(card.rank)
-        elif card.suit == pack.DIAMOND:
+        elif card.suit == p.DIAMOND:
             self.diamonds.append(card.rank)
-        elif card.suit == pack.SPADE:
+        elif card.suit == p.SPADE:
             self.spades.append(card.rank)
         else:
             self.clubs.append(card.rank)
@@ -104,7 +159,7 @@ class Hand:
                 self.value += STRAIGHT
                 self.has_full_house = True
             for value in flush_cards:
-                self.value += pack.rank_to_value(value)
+                self.value += p.rank_to_value(value)
             return self.value
         if self.has_straight():
             self.value += STRAIGHT
