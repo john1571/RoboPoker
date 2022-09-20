@@ -192,7 +192,7 @@ def play(num_starting_players):
             print("\n*****NEW ROUND*****")
         table = Table(pack.getDeck())
         if round == 0:
-            Logging.Log_chips(all_players, table)
+            Logging.Log_chips(all_players, table, 0)
         players = []
         for person in all_players:
             if not person.busted:
@@ -227,7 +227,7 @@ def play(num_starting_players):
         payout = pot
         gp.payout(payout, side_pots, players, table)
 
-        Logging.Log_chips(all_players, table)
+        Logging.Log_chips(all_players, table, pot)
         for person in all_players:
             person.status(table)
         end(players)
@@ -242,7 +242,7 @@ def play(num_starting_players):
             break
 
 def print_hi(name):
-    play(5)
+    play(7)
     # Use a breakpoint in the code line below to debug your script.
     print("LETS GO")  # Press Ctrl+F8 to toggle the breakpoint.
 

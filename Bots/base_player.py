@@ -22,7 +22,7 @@ class Player:
         self.folded = False
         self.all_in = False
         self.hand = hands.Hand(self.id)
-
+        self.type = self.bot_type()
 
     def new_hand(self):
         self.folded = False
@@ -77,7 +77,9 @@ class Player:
     def show_hand(self, table, print_now=False):
         if print_now:
             print(self.hand.show(table))
-        return self.hand.show(table)
+        if self.hand:
+            return self.hand.show(table)
+        return ""
 
     def bot_type(self):
         return "base_player"

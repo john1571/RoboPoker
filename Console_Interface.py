@@ -1,4 +1,7 @@
 import os
+
+import globals
+
 divideder = "\n**********\n"
 showdown = False
 user_bets_status = []  # User name, bet
@@ -7,7 +10,11 @@ pot = 0
 table = ""
 user_turn = False
 
+
 def print_status(players, bets, current_actor, pot, table, user, prompt):
+    if not globals.g_user_playing:
+        return ""
+
     interface = ""
     interface += divideder
     interface += "Table:\t" + table.show() + "\n"
