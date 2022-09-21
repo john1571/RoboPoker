@@ -6,19 +6,31 @@ class Bot3(bp.Player):
         def call():
             return bet - my_bet
 
+        def raise_x_(x):
+            return (bet * x) - my_bet
+
+        def all_in():
+            return self.chips
 
         num_cards = self.get_num_cards()
         hand_value = self.get_hand_value()
         if num_cards == 2:
             if hand_value >= b.value_of(['Kh', 'Kd']):
-                return max(self.chips / 2, bet - my_bet)
+                if pot and pot > self.chips / 10:
+                    return all_in()
+                elif pot == 0:
+                    return round(self.chips / 100)
+                else:
+                    raise_x_(2)
             elif hand_value >= b.value_of(['10h', '10d']):
-                return bet - my_bet
+                return call()
             elif hand_value >= b.value_of(['Ah']) and bet - my_bet < (self.chips / 10):
-                return bet - my_bet
+                return call()
+            else:
+                return None
         if num_cards > 2:
             if hand_value >= b.value_of(['5h', '6d', '7c', '8h', '9c']):
-                return (bet * 3) - my_bet
+                return raise_x_(3)
             elif hand_value >= b.value_of(['Kh', 'Kd']):
                 if bet == 0:
                     return 15
@@ -27,7 +39,9 @@ class Bot3(bp.Player):
         if bet == 0:
             return 5
         elif bet - my_bet < (self.chips / 50):
-            return (bet * 2) - my_bet
+            return raise_x_(2)
+        if pot > self.chips / 10:
+            return call()
         return None
 
     def bot_type(self):

@@ -118,6 +118,8 @@ def fold_player(player, players, bets):
         bets.__delitem__(player.name)
 
 
+
+
 def betting(players, table, pot, side_pots):
     loc_side_pots = {}
     current_bet = 0

@@ -20,6 +20,9 @@ class YOUR_BOT_NAME(bp.Player):
                 if pot and pot > self.chips / 10:
                     return all_in()
                 elif pot == 0:
+                    return round(self.chips / 100)
+                else:
+                    raise_x_(2)
 
             elif hand_value >= b.value_of(['10h', '10d']):
                 return call()
