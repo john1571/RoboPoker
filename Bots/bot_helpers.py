@@ -7,3 +7,5 @@ def value_of(cards, name='jehosephat'):
     for card in cards:
         hand.add_card(hh.Shorthand[card])
     return hand.get_value()
+
+

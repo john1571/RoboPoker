@@ -14,6 +14,18 @@ class Bot3(bp.Player):
                 return bet - my_bet
             elif hand_value >= b.value_of(['Ah']) and bet - my_bet < (self.chips / 10):
                 return bet - my_bet
+        if num_cards > 2:
+            if hand_value >= b.value_of(['5h', '6d', '7c', '8h', '9c']):
+                return (bet * 3) - my_bet
+            elif hand_value >= b.value_of(['Kh', 'Kd']):
+                if bet == 0:
+                    return 15
+                elif bet - my_bet < (self.chips / 20):
+                    return (bet * 2) - my_bet
+        if bet == 0:
+            return 5
+        elif bet - my_bet < (self.chips / 50):
+            return (bet * 2) - my_bet
         return None
 
     def bot_type(self):

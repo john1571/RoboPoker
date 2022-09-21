@@ -126,8 +126,9 @@ def betting(players, table, pot, side_pots):
     for player in players:
         bets[player.name] = 0
     Betting_done = False
-    actions = {}
     side_pots = {}
+    betting_round = 0
+    round_history = {}
     while not Betting_done:
         for player in players:
             CI.print_status(players, bets, player, pot, table, globals.g_user, "")
@@ -138,7 +139,8 @@ def betting(players, table, pot, side_pots):
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
-            bet = player.outer_act(current_bet, bets[player.name], table, actions, pot)
+            bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot)
+
             if bet is None:
                 fold_player(player, players, bets)
                 continue
