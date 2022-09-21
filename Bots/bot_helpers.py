@@ -9,3 +9,5 @@ def value_of(cards, name='jehosephat'):
     return hand.get_value()
 
 
+def call(bet, my_bet):
+    return bet - my_bet
