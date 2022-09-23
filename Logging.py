@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 dt = datetime.now()
-log_file = "C:\\Users\\johnpaul.jones\\PycharmProjects\\PokerInterface3\\Logs\\LogFile" + \
+log_file = os.getwd() + "\\Logs\\LogFile" + \
            dt.strftime('%Y-%m-%d_%H-%M-%S') + ".csv"
 
 def Log_chips(players, table, pot):
