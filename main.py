@@ -227,12 +227,13 @@ def play(num_starting_players):
             print("\nSHOWDOWN:")
         show_all_hands(players, table)
         payout = pot
-        pot = gp.payout(payout, side_pots, players, table)
+        carryover_pot = gp.payout(payout, side_pots, players, table)
 
         Logging.Log_chips(all_players, table, pot)
         for person in all_players:
             person.status(table)
         end(players)
+        pot = carryover_pot
         ended = False
         num_busted = 0
         for player in all_players:
