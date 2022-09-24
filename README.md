@@ -1,4 +1,4 @@
-# PokerInterface3
+# RoboPoker
 To add a bot:
 
   1. Copy the Template_bot.py file and change the file name.
