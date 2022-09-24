@@ -51,13 +51,15 @@ class Player:
             time.sleep(1)
         new_bet = self.act(bet, my_bet, table, actions, pot)
         if new_bet:
+            new_bet = new_bet
             if new_bet >= self.chips:
                 self.all_in = True
-                new_bet = self.chips
+                new_bet = round(self.chips)
                 self.chips = 0
                 if globals.g_user_playing:
                     print(self.name + " goes all in with " + str(new_bet + my_bet))
                 return new_bet
+            new_bet = round(new_bet)
             self.chips -= new_bet
         if globals.g_user_playing:
             if new_bet is 0:

@@ -187,7 +187,7 @@ def play(num_starting_players):
     if globals.g_user_playing:
         globals.g_user = user.User(input("Your name:"), 1000)
         all_players.append(globals.g_user)
-
+    pot = 0
     for round in range(0, 1000):
         if globals.g_user_playing:
             input("press ENTER for new round ")
@@ -200,11 +200,11 @@ def play(num_starting_players):
             if not person.busted:
                 person.new_hand()
                 players.append(person)
-
+        if pot > 15:
+            print("too much pot left")
         deal(players, table)
         if not globals.g_user_playing:
             show_all_hands(players, table)
-        pot = 0
         side_pots = {}
 
         pot, side_pots = betting(players, table, pot, side_pots)
@@ -227,7 +227,7 @@ def play(num_starting_players):
             print("\nSHOWDOWN:")
         show_all_hands(players, table)
         payout = pot
-        gp.payout(payout, side_pots, players, table)
+        pot = gp.payout(payout, side_pots, players, table)
 
         Logging.Log_chips(all_players, table, pot)
         for person in all_players:

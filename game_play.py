@@ -17,43 +17,49 @@ def get_winners(players, rewarded_players, table):
     return winners
 
 
-def payout_internal(pot, side_pots, players, winners):
+def payout_internal(pot, side_pots, players, winners, rewarded):
     num_split = len(winners)
     for player in players:
         if player in winners:
             if player.name in side_pots.keys():
                 if globals.g_user_playing:
                     print(player.name + " wins " + str(side_pots[player.name] / num_split))
-                player.chips = side_pots[player.name] / num_split
+                player.chips = round(side_pots[player.name] / num_split)
                 num_split -= 1
                 pot -= side_pots[player.name]
-                winners.remove(player)
-    for player in players:
-        if player in winners:
-
-            reward = pot / num_split
+                rewarded.append(player)
+    for player in winners:
+        if player not in rewarded:
+            reward = round(pot / num_split)
             if globals.g_user_playing:
                 print(player.name + " wins " + str(reward))
             player.chips += reward
             pot -= reward
-    return pot
+    return pot, rewarded
 
 
 def payout(pot, side_pots, players, table):
+    starting_total = 0
+    for player in players:
+        starting_total += player.chips
+    starting_total += pot
     if globals.g_user_playing:
         print("final pot: " + str(pot))
     loc_players = players
     rewarded_players = []
-    while pot > 1 and len(loc_players) > 0:
+    count = 0
+    while pot > 1:
+        count += 1
         winners = get_winners(loc_players, rewarded_players, table)
-        pot = payout_internal(pot, side_pots, loc_players, winners)
-        for rewarded in winners:
-            rewarded_players.append(rewarded)
-        if len(rewarded_players) == len(players):
-            return
-            # TODO
-
-
-
+        pot, rewarded_players = payout_internal(pot, side_pots, loc_players, winners, rewarded_players)
+        if count > 20:
+            break
+    end_total = 0
+    for player in players:
+        end_total += player.chips
+    if end_total != starting_total:
+        if starting_total + 3 <= end_total <= starting_total - 3:  # allow for rounding error
+            print(end_total - starting_total)
+    return pot
 
 
