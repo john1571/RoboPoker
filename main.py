@@ -85,29 +85,17 @@ def deal(players, table):
             player.add_card(table.deck.pop(0))
 
 
-def flop(table):
-    table.flop()
-
-
-def turn(table):
-    table._turn()
-
-
-def river(table):
-    table._river()
-
-
 def next_card(players, table, action, pot, side_pots):
     if not globals.g_user_playing:
         show_all_hands(players, table)
     if action == DEAL:
         deal(players, table)
     elif action == FLOP:
-        flop(table)
+        table.flop()
     elif action == TURN:
-        turn(table)
+        table._turn()
     else:
-        river(table)
+        table._river()
     if not globals.g_user_playing:
         show_all_hands(players, table)
     pot, side_pots = betting(players, table, pot, side_pots)
