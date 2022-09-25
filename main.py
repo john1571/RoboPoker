@@ -71,6 +71,12 @@ class Table:
 
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isiah', 'John']
+DEAL = "deal"
+FLOP = "flop"
+TURN = "turn"
+RIVER = "river"
+round_order = [DEAL, FLOP, TURN, RIVER]
+
 
 def deal(players, table):
     print(table.deck.pop(0))
@@ -78,14 +84,34 @@ def deal(players, table):
         for player in players:
             player.add_card(table.deck.pop(0))
 
+
 def flop(table):
     table.flop()
+
 
 def turn(table):
     table._turn()
 
+
 def river(table):
     table._river()
+
+
+def next_card(players, table, action, pot, side_pots):
+    if not globals.g_user_playing:
+        show_all_hands(players, table)
+    if action == DEAL:
+        deal(players, table)
+    elif action == FLOP:
+        flop(table)
+    elif action == TURN:
+        turn(table)
+    else:
+        river(table)
+    if not globals.g_user_playing:
+        show_all_hands(players, table)
+    pot, side_pots = betting(players, table, pot, side_pots)
+    return pot, side_pots
 
 def show_all_hands(players, table):
     for player in players:
@@ -179,6 +205,7 @@ def betting(players, table, pot, side_pots):
     return pot, side_pots
 
 
+
 def play(num_starting_players):
     all_players = []
     for player in range(0, num_starting_players):
@@ -202,30 +229,11 @@ def play(num_starting_players):
                 players.append(person)
         if pot > 15:
             print("too much pot left")
-        deal(players, table)
-        if not globals.g_user_playing:
-            show_all_hands(players, table)
         side_pots = {}
 
-        pot, side_pots = betting(players, table, pot, side_pots)
-        flop(table)
-        if not globals.g_user_playing:
-            show_all_hands(players, table)
+        for item in round_order:
+            pot, side_pots = next_card(players, table, item, pot, side_pots)
 
-        pot, side_pots = betting(players, table, pot, side_pots)
-        turn(table)
-        if not globals.g_user_playing:
-            show_all_hands(players, table)
-
-        pot, side_pots = betting(players, table, pot, side_pots)
-        river(table)
-        if not globals.g_user_playing:
-            show_all_hands(players, table)
-
-        pot, side_pots = betting(players, table, pot, side_pots)
-        if globals.g_user_playing:
-            print("\nSHOWDOWN:")
-        show_all_hands(players, table)
         payout = pot
         carryover_pot = gp.payout(payout, side_pots, players, table)
 
