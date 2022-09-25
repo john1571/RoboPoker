@@ -101,17 +101,17 @@ def next_card(players, table, action, pot, side_pots):
     pot, side_pots = betting(players, table, pot, side_pots)
     return pot, side_pots
 
+
 def show_all_hands(players, table):
     for player in players:
         player.show_hand(table)
+
 
 def end(players):
     Table(pack.getDeck())
     for player in players:
         player.new_hand()
 
-#def betting():
-    # later
 
 class Actions:
     fold = 0
@@ -130,8 +130,6 @@ def fold_player(player, players, bets):
         players.remove(player)
     if player.name in bets.keys():
         bets.__delitem__(player.name)
-
-
 
 
 def betting(players, table, pot, side_pots):
@@ -193,7 +191,6 @@ def betting(players, table, pot, side_pots):
     return pot, side_pots
 
 
-
 def play(num_starting_players):
     all_players = []
     for player in range(0, num_starting_players):
@@ -240,14 +237,9 @@ def play(num_starting_players):
         if ended:
             break
 
-def print_hi(name):
-    play(7)
-    # Use a breakpoint in the code line below to debug your script.
-    print("LETS GO")  # Press Ctrl+F8 to toggle the breakpoint.
-
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
+    play(7)
+    print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
