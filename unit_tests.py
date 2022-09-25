@@ -1,4 +1,5 @@
 import pack as p
+import Bots.bot_helpers as b
 
 import hand_helpers
 def test_value(name, expected_value, cards):
@@ -20,7 +21,8 @@ def run_tests():
     test_value('flush', 730, ['3h', '2h', 'Qh', '4d', '6h', '10s', '7h'])
     test_value('straight', 606, ['3h', '2h', '4c', '5d', '6d'])
     test_value('set', 503, ['3h', '2h', '3d', '4c', '3s'])
-
+    assert b.value_of(['3h', '2h', 'Qh', '4d', '6h', '10s', '7h']) >\
+           b.value_of(['3h', '2h', 'Qh', '4h', '6h', '10s', '7d'])
 
 
 HEART = '♥'
