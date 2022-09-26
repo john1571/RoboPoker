@@ -5,7 +5,6 @@
 import random
 
 import pack
-import hand_helpers as Hands
 import Logging
 import Bots.Register as Register
 import Bots.user as user
@@ -85,10 +84,12 @@ def deal(players, table):
             player.add_card(table.deck.pop(0))
 
 
-def next_card(players, table, action, pot, side_pots):
+def next_card(players, table, action, pot, side_pots, dealer, little_blind=0, big_blind=0):
     if not globals.g_user_playing:
         show_all_hands(players, table)
+    blinds = False
     if action == DEAL:
+        blinds = True
         deal(players, table)
     elif action == FLOP:
         table.flop()
@@ -98,7 +99,10 @@ def next_card(players, table, action, pot, side_pots):
         table._river()
     if not globals.g_user_playing:
         show_all_hands(players, table)
-    pot, side_pots = betting(players, table, pot, side_pots)
+    if blinds:
+        pot, side_pots = betting(players, table, pot, side_pots, dealer, little_blind, big_blind)
+    else:
+        pot, side_pots = betting(players, table, pot, side_pots, dealer)
     return pot, side_pots
 
 
@@ -132,7 +136,7 @@ def fold_player(player, players, bets):
         bets.__delitem__(player.name)
 
 
-def betting(players, table, pot, side_pots):
+def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0):
     loc_side_pots = {}
     current_bet = 0
     bet = 0
@@ -143,8 +147,13 @@ def betting(players, table, pot, side_pots):
     side_pots = {}
     betting_round = 0
     round_history = {}
+    first_round = True
     while not Betting_done:
         for player in players:
+            if first_round:
+                if player is dealer:
+                    first_round = False
+                continue
             CI.print_status(players, bets, player, pot, table, globals.g_user, "")
             if player.folded:
                 fold_player(player, players, bets)
@@ -153,7 +162,15 @@ def betting(players, table, pot, side_pots):
                 continue
             if current_bet > 0 and bets[player.name] == current_bet:
                 continue
-            bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot)
+
+            forced = 0
+            if little_blind > 0:
+                forced = little_blind
+                little_blind = 0
+            elif big_blind > 0:
+                forced = big_blind
+                big_blind = 0
+            bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
 
             if bet is None:
                 fold_player(player, players, bets)
@@ -200,7 +217,11 @@ def play(num_starting_players):
         globals.g_user = user.User(input("Your name:"), 1000)
         all_players.append(globals.g_user)
     pot = 0
+    dealer_num = -1
+    little_blind = 5
+    big_blind = 10
     for round in range(0, 1000):
+        dealer_num += 1
         if globals.g_user_playing:
             input("press ENTER for new round ")
             print("\n*****NEW ROUND*****")
@@ -212,12 +233,17 @@ def play(num_starting_players):
             if not person.busted:
                 person.new_hand()
                 players.append(person)
+        if dealer_num >= len(players):
+            dealer_num = 0
+        dealer = players[dealer_num]
         if pot > 15:
             print("too much pot left")
         side_pots = {}
-
+        if round > 0 and round % 10 == 0:
+            little_blind *= 2
+            big_blind *= 2
         for item in round_order:
-            pot, side_pots = next_card(players, table, item, pot, side_pots)
+            pot, side_pots = next_card(players, table, item, pot, side_pots, dealer, little_blind, big_blind)
 
         payout = pot
         carryover_pot = gp.payout(payout, side_pots, players, table)

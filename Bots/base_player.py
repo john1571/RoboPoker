@@ -46,10 +46,14 @@ class Player:
         else:
             return bet - my_bet
 
-    def outer_act(self, bet, my_bet, table, actions, pot):
+
+    def outer_act(self, bet, my_bet, table, actions, pot, forced = 0):
         if globals.g_user_playing:
             time.sleep(1)
-        new_bet = self.act(bet, my_bet, table, actions, pot)
+        if forced == 0:
+            new_bet = self.act(bet, my_bet, table, actions, pot)
+        else:
+            new_bet = forced
         if new_bet:
             new_bet = new_bet
             if new_bet >= self.chips:
