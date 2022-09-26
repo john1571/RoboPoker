@@ -193,7 +193,7 @@ def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0)
                 assert False
         Betting_done = True
         for player in players:
-            if bets[player.name] < current_bet and not player.all_in:
+            if (bets[player.name] < current_bet or bets[player.name] < big_blind) and not player.all_in:
                 Betting_done = False
                 break
     for name in loc_side_pots.keys():
@@ -218,8 +218,8 @@ def play(num_starting_players):
         all_players.append(globals.g_user)
     pot = 0
     dealer_num = -1
-    little_blind = 5
-    big_blind = 10
+    little_blind = 2
+    big_blind = 5
     for round in range(0, 1000):
         dealer_num += 1
         if globals.g_user_playing:
@@ -265,7 +265,7 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(7)
+    play(9)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
