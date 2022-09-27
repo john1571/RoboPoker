@@ -23,36 +23,50 @@ class Table:
         self.river = None
 
     def _turn(self):
-        print("\nTURN:", end="\t")
+        #print("\nTURN:", end="\t")
         self.burned = self.deck.pop(0)
         self.turn = self.deck.pop(0)
-        self.flop1.print_with_color()
-        self.flop2.print_with_color()
-        self.flop3.print_with_color()
-        self.turn.print_with_color()
-        print("******")
+        #self.flop1.print_with_color()
+        #self.flop2.print_with_color()
+        #self.flop3.print_with_color()
+        #self.turn.print_with_color()
+        #print("******")
 
     def flop(self):
-        print("\nFLOP:", end="\t")
+        #print("\nFLOP:", end="\t")
         self.burned = self.deck.pop(0)
         self.flop1 = self.deck.pop(0)
         self.flop2 = self.deck.pop(0)
         self.flop3 = self.deck.pop(0)
-        self.flop1.print_with_color()
-        self.flop2.print_with_color()
-        self.flop3.print_with_color()
-        print("******")
+        #self.flop1.print_with_color()
+        #self.flop2.print_with_color()
+        #self.flop3.print_with_color()
+        #print("******")
 
     def _river(self):
-        print("\nRIVER:", end="\t")
+        #print("\nRIVER:", end="\t")
         self.burned = self.deck.pop(0)
         self.river = self.deck.pop(0)
-        self.flop1.print_with_color()
-        self.flop2.print_with_color()
-        self.flop3.print_with_color()
-        self.turn.print_with_color()
-        self.river.print_with_color()
-        print("******")
+        #self.flop1.print_with_color()
+        #self.flop2.print_with_color()
+        #self.flop3.print_with_color()
+        #self.turn.print_with_color()
+        #self.river.print_with_color()
+        #print("******")
+
+    def show_with_color(self):
+        show_string = ""
+        if (self.flop1):
+            show_string += self.flop1.get_with_color() + ' '
+        if (self.flop2):
+            show_string += self.flop2.get_with_color() + ' '
+        if (self.flop3):
+            show_string += self.flop3.get_with_color() + ' '
+        if (self.turn):
+            show_string += self.turn.get_with_color() + ' '
+        if (self.river):
+            show_string += self.river.get_with_color() + ' '
+        return show_string
 
     def show(self):
         show_string = ""
@@ -84,7 +98,7 @@ def deal(players, table):
             player.add_card(table.deck.pop(0))
 
 
-def next_card(players, table, action, pot, side_pots, dealer, little_blind=0, big_blind=0):
+def next_card(players, table, action, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
     if not globals.g_user_playing:
         show_all_hands(players, table)
     blinds = False
@@ -100,9 +114,9 @@ def next_card(players, table, action, pot, side_pots, dealer, little_blind=0, bi
     if not globals.g_user_playing:
         show_all_hands(players, table)
     if blinds:
-        pot, side_pots = betting(players, table, pot, side_pots, dealer, little_blind, big_blind)
+        pot, side_pots = betting(players, table, pot, side_pots, dealer, all_players, little_blind, big_blind)
     else:
-        pot, side_pots = betting(players, table, pot, side_pots, dealer)
+        pot, side_pots = betting(players, table, pot, side_pots, dealer, all_players)
     return pot, side_pots
 
 
@@ -117,26 +131,16 @@ def end(players):
         player.new_hand()
 
 
-class Actions:
-    fold = 0
-    call = 1
-    bet = 2
-    check = 3
-    allin = 4
-
-
 def fold_player(player, players, bets):
     if globals.g_user_playing:
         print(player.name + " folds")
     if player:
         player.fold()
-    if player in players:
-        players.remove(player)
     if player.name in bets.keys():
         bets.__delitem__(player.name)
 
 
-def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0):
+def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
     loc_side_pots = {}
     current_bet = 0
     bet = 0
@@ -154,9 +158,8 @@ def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0)
                 if player is dealer:
                     first_round = False
                 continue
-            CI.print_status(players, bets, player, pot, table, globals.g_user, "")
+            CI.print_status(all_players, bets, player, pot, table, globals.g_user, "")
             if player.folded:
-                fold_player(player, players, bets)
                 continue
             if player.all_in:
                 continue
@@ -193,9 +196,12 @@ def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0)
                 assert False
         Betting_done = True
         for player in players:
+            if player.folded:
+                continue
             if (bets[player.name] < current_bet or bets[player.name] < big_blind) and not player.all_in:
                 Betting_done = False
                 break
+    CI.print_status(all_players, bets, None, pot, table, globals.g_user, "", 5)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for bet in bets.values():
@@ -204,7 +210,7 @@ def betting(players, table, pot, side_pots, dealer, little_blind=0, big_blind=0)
             else:
                 side_pot_value += bet
         side_pots[name] = side_pot_value
-    print("pot: " + str(pot))
+    #print("pot: " + str(pot))
     return pot, side_pots
 
 
@@ -218,8 +224,8 @@ def play(num_starting_players):
         all_players.append(globals.g_user)
     pot = 0
     dealer_num = -1
-    little_blind = 2
-    big_blind = 5
+    little_blind = 5
+    big_blind = 10
     for round in range(0, 1000):
         dealer_num += 1
         if globals.g_user_playing:
@@ -239,11 +245,11 @@ def play(num_starting_players):
         if pot > 15:
             print("too much pot left")
         side_pots = {}
-        if round > 0 and round % 10 == 0:
+        if round > 0 and round % 25 == 0:
             little_blind *= 2
             big_blind *= 2
         for item in round_order:
-            pot, side_pots = next_card(players, table, item, pot, side_pots, dealer, little_blind, big_blind)
+            pot, side_pots = next_card(players, table, item, pot, side_pots, dealer, all_players, little_blind, big_blind)
 
         payout = pot
         carryover_pot = gp.payout(payout, side_pots, players, table)

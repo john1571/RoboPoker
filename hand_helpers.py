@@ -207,6 +207,11 @@ class Hand:
         else:
             return max(x.value for x in self.cards)
 
+    def show_for_print(self):
+        show_string = ""
+        for card in self.cards_in_hand:
+            show_string += card.get_with_color() + ' '
+        return show_string
 
     def has_flush(self):
         if len(self.hearts) > 4:

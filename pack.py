@@ -55,5 +55,8 @@ class Card:
     def print_with_color(self):
         print(self.color + self.rank + self.suit + bcolors.ENDC, end='\t')
 
+    def get_with_color(self):
+        return self.color + self.rank + self.suit + bcolors.ENDC
+
     def log_string(self):
         return self.rank + suits_printable[self.suit]
