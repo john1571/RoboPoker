@@ -5,7 +5,7 @@ import Bots.bot_helpers as b
 # Add your bot class in the Register array.
 # Watch it compete
 
-class YOUR_BOT_NAME(bp.Player):
+class Bot4(bp.Player):
     # bet: current bet at the table.
     # my_bet: amount of money you have already put in the pot
     # actions: a dictionary of actions from other players
@@ -25,31 +25,342 @@ class YOUR_BOT_NAME(bp.Player):
         def fold():
             return None  # return None to fold
 
-        # YOUR CODE GOES HERE
+        if pot > (bet - my_bet)*20:
+            if bet - my_bet > self.chips:
+                if num_cards == 2:
+                    if hand_value > b.value_of(['8h','8d']):
+                        return all_in()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['3h', '3d', '3c']):
+                        return all_in()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Jh','Jd','Jc']):
+                        return all_in()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 2):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh','Jd']):
+                        return all_in()
+                    elif hand_value > b.value_of(['5h','5d']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return all_in()
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Qd', 'Qc']):
+                        return all_in()
+                    elif hand_value > b.value_of(['2h', '2d', '2c']):
+                        return call()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 4):
+                if bet - my_bet > self.chips:
+                    if num_cards == 2:
+                        if hand_value > b.value_of(['8h', '8d']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                    elif num_cards == 5:
+                        if hand_value > b.value_of(['3h', '3d', '3c']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                    else:
+                        if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                elif bet - my_bet > (self.chips / 2):
+                    if num_cards == 2:
+                        if hand_value > b.value_of(['Jh', 'Jd']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['5h', '5d']):
+                            return call()
+                        else:
+                            return fold()
+                    elif num_cards == 5:
+                        if hand_value > b.value_of(['8h', '8d', '8c']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['Qh', 'Qd']):
+                            return call()
+                        else:
+                            return fold()
+                    else:
+                        if hand_value > b.value_of(['Qh', 'Qd', 'Qc']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['2h', '2d', '2c']):
+                            return call()
+                        else:
+                            return fold()
+            elif bet - my_bet > (self.chips / 8):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Ad']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['2h', '2d', '2c']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 16):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Ad']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['2h', '2d', '2c']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+            else:
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['Ad']):
+                        return raise_x_(2)
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return raise_x_(2)
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['2h', '2d', '2c']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(2)
+                    else:
+                        return fold()
+        else:
+            if bet - my_bet > self.chips:
+                if num_cards == 2:
+                    if hand_value > b.value_of(['6h', '6d']):
+                        return all_in()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['3h', '3d', '4c', '4c']):
+                        return all_in()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
+                        return all_in()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 2):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return all_in()
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return all_in()
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['10h', '10d', '10c']):
+                        return all_in()
+                    elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
+                        return call()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 4):
+                if bet - my_bet > self.chips:
+                    if num_cards == 2:
+                        if hand_value > b.value_of(['6h', '6d']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                    elif num_cards == 5:
+                        if hand_value > b.value_of(['3h', '3d', '4c', '4c']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                    else:
+                        if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
+                            return raise_x_(2)
+                        else:
+                            return fold()
+                elif bet - my_bet > (self.chips / 2):
+                    if num_cards == 2:
+                        if hand_value > b.value_of(['Jh', 'Jd']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['5h', '5d']):
+                            return call()
+                        else:
+                            return fold()
+                    elif num_cards == 5:
+                        if hand_value > b.value_of(['8h', '8d', '8c']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['Qh', 'Qd']):
+                            return call()
+                        else:
+                            return fold()
+                    else:
+                        if hand_value > b.value_of(['Qh', 'Qd', 'Qc']):
+                            return raise_x_(2)
+                        elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
+                            return call()
+                        else:
+                            return fold()
+            elif bet - my_bet > (self.chips / 8):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Ad']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['8h', '8d', '8c']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
+                        return call()
+                    else:
+                        return fold()
+            elif bet - my_bet > (self.chips / 16):
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Ad']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(4)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
+                        return call()
+                    else:
+                        return fold()
+            else:
+                if num_cards == 2:
+                    if hand_value > b.value_of(['Jh', 'Jd']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['Ad']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Qh']):
+                        return call()
+                    else:
+                        return fold()
+                elif num_cards == 5:
+                    if hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['Qh', 'Qd']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['10h', '10d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['5h', '5d']):
+                        return call()
+                    else:
+                        return fold()
+                else:
+                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                        return raise_x_(5)
+                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                        return raise_x_(3)
+                    elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
+                        return raise_x_(2)
+                    elif hand_value > b.value_of(['Jh', 'Jd']):
+                        return call()
+                    else:
+                        return fold()
 
-        # Example (replace this code with your own):
-        if num_cards == 2: # If I have only two cards
-            hand_value >= b.value_of(['Kh', 'Kd']): # and they are pocket kings or aces
-                return all_in() # go all in
-            elif hand_value >= b.value_of(['10h', '10d']): # if they are good
-                return raise_x_(2) # double the bet
-            elif hand_value >= b.value_of(['Ah']): # if they are ok
-                return call() # just call
-            else:   # if I don't even have an Ace high,
-                return fold() # fold quickly
 
-        # If I have more than two cards:
-        if hand_value >= b.value_of(['5h', '6d', '7c', '8h', '9c']): # If I have a straight
-            return raise_x_(3) # triple the bet
-        elif hand_value >= b.value_of(['Kh', 'Kd']): # if I have at least a pair of kings
-            if bet == 0: # If nobody else is betting
-                return 15 # bet a small bet
-            elif call() < (self.chips / 20): # if they are betting, but it isn't a big bet to call
-                return call() # then call
-        else: # if I don't even have a pair of kings at this point
-            return fold() # run away!
+
 
 
     # Change this function to return your bot type
     def bot_type(self):
-        return "Your_bot_type"
+        return "Bot4"
+
