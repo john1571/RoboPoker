@@ -152,6 +152,10 @@ class Hand:
         self.value = 0
         if len(self.cards) <= 0:
             return 0
+        if len(self.four) > 0:
+            self.value += FOUR_OF_A_KIND
+            self.value += self.four[0]
+            return self.value
         flush_cards = self.has_flush()
         if flush_cards:
             self.value += FLUSH
