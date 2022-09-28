@@ -10,18 +10,45 @@ pot = 0
 table = ""
 user_turn = False
 
+def pad_num_to_string(number, string_length, num_tabs, prefix = ''):
+    padded_string = ""
+    spaces_needed = string_length
+    temp = number/10
+    if number < 0:
+        spaces_needed -= 1
+        while temp < -1:
+            spaces_needed -= 1
+            temp = temp/10
+    else:
+        while temp > 1:
+            spaces_needed -= 1
+            temp = temp/10
+    while spaces_needed > 0:
+        padded_string += " "
+        spaces_needed -= 1
+    tabs = ""
+    for i in range(0, num_tabs):
+        tabs += '\t'
+    return padded_string + prefix + str(number) + tabs
 
-def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=2):
+
+
+def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=0):
     if globals.g_watch:
         line_1 = "Table: " + table.show()
-        name_line = ""
-        line_2 = ""
-        line_3 = ""
-        line_4 = ""
+        name_line = "Names:  "
+        player_chips = "Chips:  "
+        player_hands = "Hands:  "
+        bets_string =  "Bets:   "
+        average_win =  "Av. W.:"
+        average_loss = "Av. L.:"
+        percent_won = "Win %: "
         local_sleep = sleep
         for player in players:
+            if player.busted:
+                continue
             if player == current_actor:
-                line_2 += ">"
+                player_chips += ">"
                 if player.busted or player.folded:
                     local_sleep = 0
             name_line += player.name[:4] + ": \t\t"
@@ -29,42 +56,38 @@ def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=2
             if player.busted:
                 chips_string = " OUT"
             else:
-                if player.chips < 10:
-                    chips_string = "   " + str(player.chips)
-                elif player.chips < 100:
-                    chips_string = "  " + str(player.chips)
-                elif player.chips < 1000:
-                    chips_string = " " + str(player.chips)
-                else:
-                    chips_string = str(player.chips)
-            line_2 += chips_string + "\t\t"
+                chips_string = pad_num_to_string(player.chips, 5, 2)
+            player_chips += chips_string
             if player.hand:
-                line_3 += player.hand.show_for_print() + "\t\t"
+                player_hands += player.hand.show_for_print() + "\t\t"
             else:
-                line_3 += "\t\t\t"
+                player_hands += "\t\t\t"
             if player.folded:
-                line_4 += "fold" + "\t\t"
+                bets_string += "fold" + "\t\t"
             elif player.busted:
-                line_4 += " out" + "\t\t"
+                bets_string += " out" + "\t\t"
             else:
-                bet_string = ""
-                player_bet = bets[player.name]
-                if player_bet < 10:
-                    bet_string = "   " + str(player_bet)
-                elif player_bet < 100:
-                    bet_string = "  " + str(player_bet)
-                elif player_bet < 1000:
-                    bet_string = " " + str(player_bet)
-                else:
-                    bet_string = str(player_bet)
-                line_4 += bet_string + "\t\t"
+                bet_string = pad_num_to_string(bets[player.name], 5, 2)
+                bets_string += bet_string
+            win_average = pad_num_to_string(player.stats.av_win(), 5, 2)
+            average_win += win_average
+            loss_average = pad_num_to_string(player.stats.av_loss(), 5, 2)
+            average_loss += loss_average
+            win_percent = pad_num_to_string(player.stats.percent_won(), 4, 2, '%')
+            percent_won += win_percent
         print("\n\n\n\n\n")
         print("Pot: " + str(pot) + "\tTable: ", end="")
         print(table.show_with_color())
         print(name_line)
-        print(line_2)
-        print(line_3)
-        print(line_4)
+        print(player_chips)
+        print(player_hands)
+        print(bets_string)
+        print(prompt)
+        print("Stats:")
+        print(name_line)
+        print(average_win)
+        print(average_loss)
+        print(percent_won)
         time.sleep(local_sleep)
 
 

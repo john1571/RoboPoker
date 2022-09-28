@@ -1,6 +1,7 @@
 import hand_helpers as hands
 import globals
 import time
+import Bots.bot_helpers as b
 
 class Actions:
     fold = 0
@@ -23,6 +24,7 @@ class Player:
         self.all_in = False
         self.hand = hands.Hand(self.id)
         self.type = self.bot_type()
+        self.stats = b.Stats(self.chips)
 
     def new_hand(self):
         self.folded = False
@@ -99,3 +101,13 @@ class Player:
         if self.hand:
             return len(self.hand.cards)
         return 0
+
+    def update_stats(self):
+        if self.stats.busted:
+            return
+        if self.folded:
+            self.stats.folded(self.chips)
+        else:
+            self.stats.update(self.chips)
+        if self.busted:
+            self.stats.busted = True

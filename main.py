@@ -158,7 +158,6 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
                 if player is dealer:
                     first_round = False
                 continue
-            CI.print_status(all_players, bets, player, pot, table, globals.g_user, "")
             if player.folded:
                 continue
             if player.all_in:
@@ -176,9 +175,12 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
 
             if bet is None:
+                CI.print_status(all_players, bets, player, pot, table, globals.g_user, player.name + " folds")
                 fold_player(player, players, bets)
                 continue
             pot += bet
+
+            CI.print_status(all_players, bets, player, pot, table, globals.g_user, player.name + " bets " + str(bet))
             bets[player.name] += bet
             if bets[player.name] < current_bet:
                 if player.all_in:
@@ -201,7 +203,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             if (bets[player.name] < current_bet or bets[player.name] < big_blind) and not player.all_in:
                 Betting_done = False
                 break
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, "", 5)
+    CI.print_status(all_players, bets, None, pot, table, globals.g_user, "Betting complete", 5)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for bet in bets.values():
@@ -257,6 +259,7 @@ def play(num_starting_players):
         Logging.Log_chips(all_players, table, pot)
         for person in all_players:
             person.status(table)
+            person.update_stats()
         end(players)
         pot = carryover_pot
         ended = False
@@ -271,7 +274,7 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(9)
+    play(5)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
