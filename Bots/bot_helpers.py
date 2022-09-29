@@ -25,21 +25,25 @@ class Stats:
         self.losses_when_folded = []
         self.last_chips = chips
         self.busted = False
+        self.last_delta = 0
 
     def folded(self, chips):
         self.rounds += 1
-        self.losses.append(self.last_chips - chips)
-        self.losses_when_folded.append(self.last_chips - chips)
+        self.last_delta = chips - self.last_chips
+        self.losses.append(self.last_delta)
+        self.losses_when_folded.append(self.last_delta)
         self.last_chips = chips
 
     def update(self, chips):
         self.rounds += 1
         if chips == self.last_chips:
+            self.last_delta = 0
             return
+        self.last_delta = chips - self.last_chips
         if chips > self.last_chips:
-            self.winnings.append(chips - self.last_chips)
+            self.winnings.append(self.last_delta)
         if chips < self.last_chips:
-            self.losses.append(self.last_chips - chips)
+            self.losses.append(self.last_delta)
         self.last_chips = chips
 
     def av_win(self):
@@ -54,7 +58,7 @@ class Stats:
     def av_delta(self):
         if self.rounds < 1:
             return 0
-        return round((sum(self.winnings) - sum(self.losses))/self.rounds)
+        return round((sum(self.winnings) + sum(self.losses))/self.rounds)
 
     def percent_won(self):
         won = len(self.winnings)

@@ -33,16 +33,20 @@ def pad_num_to_string(number, string_length, num_tabs, prefix = ''):
 
 
 
-def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=0):
+def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=2):
     if globals.g_watch:
-        line_1 = "Table: " + table.show()
-        name_line = "Names:  "
-        player_chips = "Chips:  "
-        player_hands = "Hands:  "
-        bets_string =  "Bets:   "
-        average_win =  "Av. W.:"
-        average_loss = "Av. L.:"
-        percent_won = "Win %: "
+        if (current_actor):
+            print("Round:\t " + str(current_actor.stats.rounds))
+        line_1 = "Table:\t " + table.show()
+        name_line = "Names:\t  "
+        player_chips = "Chips:\t"
+        player_hands = "Hands:\t  "
+        bets_string =  "Bets:\t"
+        last_round = "Last:\t"
+        average_win =  "Av. W.:\t"
+        average_loss = "Av. L.:\t"
+        average_delta = "Av. D.:\t"
+        percent_won = "Win %: \t"
         local_sleep = sleep
         for player in players:
             if player.busted:
@@ -75,19 +79,30 @@ def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=0
             average_loss += loss_average
             win_percent = pad_num_to_string(player.stats.percent_won(), 4, 2, '%')
             percent_won += win_percent
+            last_delta = pad_num_to_string(player.stats.last_delta, 5, 2)
+            last_round += last_delta
+            av_delta = pad_num_to_string(player.stats.av_delta(), 5 ,2)
+            average_delta += av_delta
         print("\n\n\n\n\n")
+        if (current_actor):
+            print("Round: " + str(current_actor.stats.rounds))
+        else:
+            print("")
         print("Pot: " + str(pot) + "\tTable: ", end="")
         print(table.show_with_color())
         print(name_line)
         print(player_chips)
         print(player_hands)
         print(bets_string)
-        print(prompt)
-        print("Stats:")
+        print("\n" + prompt)
+        print("\nStats:")
         print(name_line)
+        print(last_round)
+        print(average_delta)
         print(average_win)
         print(average_loss)
         print(percent_won)
+
         time.sleep(local_sleep)
 
 
