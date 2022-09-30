@@ -25,6 +25,7 @@ class Bot4(bp.Player):
         def fold():
             return None  # return None to fold
 
+        # WAY TOO VERBOSE
         if pot > (bet - my_bet)*20:
             if bet - my_bet > self.chips:
                 if num_cards == 2:
@@ -38,15 +39,15 @@ class Bot4(bp.Player):
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Jh','Jd','Jc']):
+                    if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
                         return all_in()
                     else:
                         return fold()
             elif bet - my_bet > (self.chips / 2):
                 if num_cards == 2:
-                    if hand_value > b.value_of(['Jh','Jd']):
+                    if hand_value > b.value_of(['Jh', 'Jd']):
                         return all_in()
-                    elif hand_value > b.value_of(['5h','5d']):
+                    elif hand_value > b.value_of(['5h', '5d']):
                         return call()
                     else:
                         return fold()
@@ -356,11 +357,6 @@ class Bot4(bp.Player):
                     else:
                         return fold()
 
-
-
-
-
     # Change this function to return your bot type
     def bot_type(self):
         return "Bot4"
-
