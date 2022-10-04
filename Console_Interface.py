@@ -33,7 +33,7 @@ def pad_num_to_string(number, string_length, num_tabs, prefix = ''):
 
 
 
-def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=2):
+def print_status(players, bets, current_actor, pot, table, user, sleep=2):
     if globals.g_watch:
         if (current_actor):
             print("Round:\t " + str(current_actor.stats.rounds))
@@ -94,7 +94,6 @@ def print_status(players, bets, current_actor, pot, table, user, prompt, sleep=2
         print(player_chips)
         print(player_hands)
         print(bets_string)
-        print("\n" + prompt)
         print("\nStats:")
         print(name_line)
         print(last_round)

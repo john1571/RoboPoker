@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+
 dt = datetime.now()
 log_file = os.getcwd() + "\\Logs\\LogFile" + \
            dt.strftime('%Y-%m-%d_%H-%M-%S') + ".csv"
