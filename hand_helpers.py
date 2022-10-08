@@ -217,6 +217,32 @@ class Hand:
             show_string += card.get_with_color() + ' '
         return show_string
 
+    def get_hand_string(self, table):
+        for card in get_table_cards(table):
+            self.add_card(card, table)
+        if self.has_straight_flush:
+            return "str. fl."
+        elif self.has_four():
+            return "4-o-kind"
+        elif self.has_full_house:
+            return "full hse"
+        elif self.has_flush():
+            return "   flush"
+        elif self.has_straight():
+            return "straight"
+        elif self.has_set():
+            return "3-o-kind"
+        elif self.has_pair():
+            if len(self.has_pair()) > 1:
+                return "two-pair"
+            else:
+                return "    pair"
+        else:
+            return " hi card"
+
+    def has_full_house(self):
+        return self.has_full_house
+
     def has_flush(self):
         if len(self.hearts) > 4:
             return self.hearts
@@ -315,14 +341,6 @@ def straight_in_array(array):
 
 def get_table_cards(table):
     table_cards = []
-    if table.flop1:
-        table_cards.append(table.flop1)
-    if table.flop2:
-        table_cards.append(table.flop2)
-    if table.flop3:
-        table_cards.append(table.flop3)
-    if table.turn:
-        table_cards.append(table.turn)
-    if table.river:
-        table_cards.append(table.river)
+    for card in table.cards_on_table:
+        table_cards.append(card)
     return table_cards

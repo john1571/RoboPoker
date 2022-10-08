@@ -39,8 +39,9 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=2):
             print("Round:\t " + str(current_actor.stats.rounds))
         line_1 = "Table:\t " + table.show()
         name_line = "Names:\t  "
-        player_chips = "Chips:\t"
+        player_chips = "Chips:\t  "
         player_hands = "Hands:\t  "
+        hands_string = "Values:\t "
         bets_string =  "Bets:\t"
         last_round = "Last:\t"
         average_win =  "Av. W.:\t"
@@ -64,12 +65,13 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=2):
             player_chips += chips_string
             if player.hand:
                 player_hands += player.hand.show_for_print() + "\t\t"
+                hands_string += player.hand.get_hand_string(table) + "\t "
             else:
                 player_hands += "\t\t\t"
             if player.folded:
-                bets_string += "fold" + "\t\t"
+                bets_string += " fold" + "\t\t"
             elif player.busted:
-                bets_string += " out" + "\t\t"
+                bets_string += "   out" + "\t\t"
             else:
                 bet_string = pad_num_to_string(bets[player.name], 5, 2)
                 bets_string += bet_string
@@ -93,6 +95,7 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=2):
         print(name_line)
         print(player_chips)
         print(player_hands)
+        print(hands_string)
         print(bets_string)
         print("\nStats:")
         print(name_line)
@@ -103,37 +106,3 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=2):
         print(percent_won)
 
         time.sleep(local_sleep)
-
-
-    if not globals.g_user_playing:
-        return ""
-
-    interface = ""
-    interface += divideder
-    interface += "Table:\t" + table.show() + "\n"
-    interface += "Pot:\t$" + str(pot) + "\n"
-    interface += divideder
-
-    betting_string = "Bets:\n"
-    for player in players:
-        for name, bet in bets.items():
-            if player.name == name:
-                player_string = "\t" + name + "\t$" + str(bet) + "\t"
-                if player.busted:
-                    player_string += 'Busted'
-                elif player.folded:
-                    player_string += 'Folded'
-                elif name == current_actor:
-                    player_string += '<-ACTION'
-                betting_string += player_string + '\n'
-
-    interface += betting_string
-    interface += divideder
-    if user:
-        interface += user.name + "'s cards:\t" + user.show_hand(table) + '\n'
-        interface += user.name + "'s chips:\t$" + str(user.chips)
-    interface += divideder
-    os.system('cls')
-    print(interface)
-    if prompt:
-        return input(prompt)
