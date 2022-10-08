@@ -15,7 +15,10 @@ def accept_wrapper(sock):
     sel.register(conn, selectors.EVENT_READ, data=message)
 
 def run_server():
-    host, port = sys.argv[]
+    host, port = sys.argv[1], int(sys.argv[2])
+    lsock = socket.socket(socket.AD_INET, socket.SOCK_STREAM)
+    # Avoid bind() exception: OSError: [Errno 48] Address already in use
+    lsock.setsockopt
 
 def table_server():
     # set hostname
