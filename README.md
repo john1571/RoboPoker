@@ -18,3 +18,7 @@ To run the program  (After checking out the code, and installing python if neces
   2. Create a "Logs" file
   3. Run from a command line:
     /PokerInterface3>> python main.py
+
+
+Server - Client - Architecture
+  Under Development
