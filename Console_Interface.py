@@ -36,18 +36,19 @@ def pad_num_to_string(number, string_length, num_tabs, prefix = ''):
 def print_status(players, bets, current_actor, pot, table, user, sleep=0):
     if globals.g_watch:
         if (current_actor):
-            print("Round:\t " + str(current_actor.stats.rounds))
-        line_1 = "Table:\t " + table.show()
-        name_line = "Names:\t  "
-        player_chips = "Chips:\t  "
-        player_hands = "Hands:\t  "
-        hands_string = "Values:\t "
-        bets_string =  "Bets:\t"
-        last_round = "Last:\t"
-        average_win =  "Av. W.:\t"
-        average_loss = "Av. L.:\t"
-        average_delta = "Av. D.:\t"
-        percent_won = "Win %: \t"
+            print("Round:\t" + str(current_actor.stats.rounds))
+        line_1 = "Table:\t" + table.show()
+        name_line = "Names:\t\t"
+        bot_type_line = "Bots:\t\t"
+        player_chips = "Chips:\t\t"
+        player_hands = "Hands:\t\t"
+        hands_string = "Values:\t\t"
+        bets_string =  "Bets:\t\t"
+        last_round = "Last:\t\t"
+        average_win =  "Av. W.:\t\t"
+        average_loss = "Av. L.:\t\t"
+        average_delta = "Av. D.:\t\t"
+        percent_won = "Win %: \t\t"
         local_sleep = sleep
         for player in players:
             if player.busted:
@@ -57,15 +58,16 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=0):
                 if player.busted or player.folded:
                     local_sleep = 0
             name_line += player.name[:4] + ": \t\t"
+            bot_type_line += player.bot_type()[:4] + "\t\t"
             chips_string = ""
             if player.busted:
                 chips_string = " OUT"
             else:
-                chips_string = pad_num_to_string(player.chips, 5, 2)
+                chips_string = pad_num_to_string(player.chips, 4, 2)
             player_chips += chips_string
             if player.hand:
                 player_hands += player.hand.show_for_print() + "\t\t"
-                hands_string += player.hand.get_hand_string(table) + "\t "
+                hands_string += player.hand.get_hand_string(table)[:4] + "\t\t"
             else:
                 player_hands += "\t\t\t"
             if player.folded:
@@ -73,17 +75,17 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=0):
             elif player.busted:
                 bets_string += "   out" + "\t\t"
             else:
-                bet_string = pad_num_to_string(bets[player.name], 5, 2)
+                bet_string = pad_num_to_string(bets[player.name], 4, 2)
                 bets_string += bet_string
-            win_average = pad_num_to_string(player.stats.av_win(), 5, 2)
+            win_average = pad_num_to_string(player.stats.av_win(), 4, 2)
             average_win += win_average
-            loss_average = pad_num_to_string(player.stats.av_loss(), 5, 2)
+            loss_average = pad_num_to_string(player.stats.av_loss(), 4, 2)
             average_loss += loss_average
-            win_percent = pad_num_to_string(player.stats.percent_won(), 4, 2, '%')
+            win_percent = pad_num_to_string(player.stats.percent_won(), 3, 2, '%')
             percent_won += win_percent
-            last_delta = pad_num_to_string(player.stats.last_delta, 5, 2)
+            last_delta = pad_num_to_string(player.stats.last_delta, 4, 2)
             last_round += last_delta
-            av_delta = pad_num_to_string(player.stats.av_delta(), 5 ,2)
+            av_delta = pad_num_to_string(player.stats.av_delta(), 4 ,2)
             average_delta += av_delta
         print("\n\n\n\n\n")
         if (current_actor):
@@ -93,6 +95,7 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=0):
         print("Pot: " + str(pot) + "\tTable: ", end="")
         print(table.show_with_color())
         print(name_line)
+        print(bot_type_line)
         print(player_chips)
         print(player_hands)
         print(hands_string)

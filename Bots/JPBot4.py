@@ -119,16 +119,16 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return call()
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['2h', '2d', '2c']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return call()
                     else:
                         return fold()
@@ -147,16 +147,16 @@ class Bot4(bp.Player):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return call()
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['2h', '2d', '2c']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return call()
                     else:
                         return fold()
@@ -175,16 +175,16 @@ class Bot4(bp.Player):
                         return raise_x_(5)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(3)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return raise_x_(2)
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(5)
                     elif hand_value > b.value_of(['2h', '2d', '2c']):
                         return raise_x_(3)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
                     else:
                         return fold()
@@ -221,7 +221,7 @@ class Bot4(bp.Player):
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['10h', '10d', '10c']):
+                    if hand_value > b.value_of(['Th', 'Td', 'Tc']):
                         return all_in()
                     elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
                         return call()
@@ -281,14 +281,14 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return call()
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
                     elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
                         return call()
@@ -305,18 +305,18 @@ class Bot4(bp.Player):
                     else:
                         return fold()
                 elif num_cards == 5:
-                    if hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    if hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return call()
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
                     elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
                         return call()
@@ -335,20 +335,20 @@ class Bot4(bp.Player):
                     else:
                         return fold()
                 elif num_cards == 5:
-                    if hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    if hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(5)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(3)
-                    elif hand_value > b.value_of(['10h', '10d']):
+                    elif hand_value > b.value_of(['Th', 'Td']):
                         return raise_x_(2)
                     elif hand_value > b.value_of(['5h', '5d']):
                         return call()
                     else:
                         return fold()
                 else:
-                    if hand_value > b.value_of(['Qh', 'Jd', '10h', '9h', '8d']):
+                    if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(5)
-                    elif hand_value > b.value_of(['Jh', 'Jd', '10h', '10d']):
+                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
                         return raise_x_(2)

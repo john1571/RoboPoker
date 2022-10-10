@@ -221,24 +221,24 @@ class Hand:
         for card in get_table_cards(table):
             self.add_card(card, table)
         if self.has_straight_flush:
-            return "str. fl."
+            return "s.f."
         elif self.has_four():
-            return "4-o-kind"
+            return " 4-k"
         elif self.has_full_house:
-            return "full hse"
+            return "full"
         elif self.has_flush():
-            return "   flush"
+            return "flsh"
         elif self.has_straight():
-            return "straight"
+            return "strt"
         elif self.has_set():
-            return "3-o-kind"
+            return " set"
         elif self.has_pair():
             if len(self.has_pair()) > 1:
-                return "two-pair"
+                return "2 pr"
             else:
-                return "    pair"
+                return "pair"
         else:
-            return " hi card"
+            return "hi c"
 
     def has_full_house(self):
         return self.has_full_house

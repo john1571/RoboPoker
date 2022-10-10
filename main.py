@@ -16,9 +16,20 @@ All_players = []
 
 
 def init_players(num=5, chips=1000):
-    for player in range(0, num):
+    All_players = []
+    for int in range(0, num):
         i = random.randint(0, len(Register.register()) - 1)
-        All_players.append(Register.register()[i](names[player], chips))
+        new_player = Register.register()[i](names[int], chips)
+        for player in All_players:
+            if not player:
+                break
+            while player.bot_type() == new_player.bot_type():
+                if i == len(Register.register()) - 1:
+                    i = 0
+                else:
+                    i += 1
+                new_player = Register.register()[i](names[int], chips)
+        All_players.append(new_player)
     return All_players
 
 
@@ -136,8 +147,9 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         little_blind *= 2
         big_blind *= 2
     for action in round_order:
-        _Table.next_card(action, players)
         pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
+        _Table.next_card(action, players)
+    pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
     payout = pot
     Logging.Log_chips(all_players, _Table, pot)
     pot = gp.payout(payout, side_pots, players, _Table)
@@ -146,7 +158,7 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         player.new_hand()
     for person in all_players:
         person.update_stats()
-    return pot
+    return pot, little_blind, big_blind
 
 
 def play(num_starting_players):
@@ -159,7 +171,7 @@ def play(num_starting_players):
         dealer_num += 1
         if round == 0:
             Logging.Log_chips(all_players, None, 0)
-        pot = deal_round(round, dealer_num, all_players, pot, little_blind, big_blind)
+        pot, little_blind, big_blind = deal_round(round, dealer_num, all_players, pot, little_blind, big_blind)
         ended = False
         num_busted = 0
         for player in all_players:

@@ -22,7 +22,7 @@ class Bot3(bp.Player):
                     return round(self.chips / 100)
                 else:
                     raise_x_(2)
-            elif hand_value >= b.value_of(['10h', '10d']):
+            elif hand_value >= b.value_of(['Th', 'Td']):
                 return call()
             elif hand_value >= b.value_of(['Ah']) and bet - my_bet < (self.chips / 10):
                 return call()
