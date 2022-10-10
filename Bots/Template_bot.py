@@ -12,6 +12,12 @@ class YOUR_BOT_NAME(bp.Player):
     def act(self, bet, my_bet, table=None, actions=None, pot=None):  # actions = dictionary: {name: amount}
         num_cards = self.get_num_cards()
         hand_value = self.get_hand_value()
+        self.hand.cards         # array of cards available (on the table and in your hand)
+        self.hand.cards_in_hand # array of cards in your hand
+        for card in self.hand.cards:
+            card.rank #
+            card.suit #
+            card.value #
 
         def call():
             return bet - my_bet

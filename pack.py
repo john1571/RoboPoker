@@ -1,9 +1,6 @@
 import random
+import globals
 
-HEART = '♥'
-CLUB = '♣'
-DIAMOND = '♦'
-SPADE = '♠'
 
 class bcolors:
     cDIAMOND = '\033[94m'
@@ -12,12 +9,23 @@ class bcolors:
     cHEART = '\033[91m'
     ENDC = '\033[0m'
 
+if globals.g_use_suit_symbols:
+    HEART = '♥'
+    CLUB = '♣'
+    DIAMOND = '♦'
+    SPADE = '♠'
+    suits = ['♥', '♣', '♦', '♠']
+    suits_printable = {'♥': 'Hearts', '♣': 'Clubs', '♦': 'Diamonds', '♠': 'Spades'}
+else:
+    HEART = 'H'
+    CLUB = 'C'
+    DIAMOND = 'D'
+    SPADE = 'S'
+    suits = ['H', 'C', 'D', 'S']
+    suits_printable = {'H': 'Hearts', 'C': 'Clubs', 'D': 'Diamonds', 'S': 'Spades'}
 
-suits = ['♥', '♣', '♦', '♠']
-suits_printable = {'♥': 'Hearts', '♣': 'Clubs', '♦': 'Diamonds', '♠': 'Spades'}
-values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-          'J': 11, 'Q': 12, 'K': 13, 'A': 14,
-}
+values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10,
+              'J': 11, 'Q': 12, 'K': 13, 'A': 14,}
 
 
 def getDeck():
