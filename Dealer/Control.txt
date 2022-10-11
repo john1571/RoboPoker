@@ -1,0 +1,5 @@
+[Play]
+SkipToRound=0
+BetPause=2
+DealPause=5
+Pause=F
