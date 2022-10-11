@@ -86,7 +86,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
                     current_bet = big_blind
                 big_blind = 0
 
-            CI.print_status(get_all_players(), bets, player, pot, table, globals.g_user)
+            CI.print_status(players, bets, player, pot, table, globals.g_user)
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
             round_history.append((player, bet))
             if bet is None:
