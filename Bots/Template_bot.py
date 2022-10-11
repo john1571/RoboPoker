@@ -37,7 +37,7 @@ class YOUR_BOT_NAME(bp.Player):
         if num_cards == 2: # If I have only two cards
             hand_value >= b.value_of(['Kh', 'Kd']): # and they are pocket kings or aces
                 return all_in() # go all in
-            elif hand_value >= b.value_of(['10h', '10d']): # if they are good
+            elif hand_value >= b.value_of(['Th', 'Td']): # if they are good
                 return raise_x_(2) # double the bet
             elif hand_value >= b.value_of(['Ah']): # if they are ok
                 return call() # just call
