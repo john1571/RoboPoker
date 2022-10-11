@@ -1,13 +1,20 @@
 import random
 import globals
 
-
-class bcolors:
-    cDIAMOND = '\033[94m'
-    cCLUB = '\033[93m'
-    cSPADE = '\033[92m'
-    cHEART = '\033[91m'
-    ENDC = '\033[0m'
+if globals.g_use_colors:
+    class bcolors:
+        cDIAMOND = '\033[94m'
+        cCLUB = '\033[93m'
+        cSPADE = '\033[92m'
+        cHEART = '\033[91m'
+        ENDC = '\033[0m'
+else:
+    class bcolors:
+        cDIAMOND = ''
+        cCLUB = ''
+        cSPADE = ''
+        cHEART = ''
+        ENDC = ''
 
 if globals.g_use_suit_symbols:
     HEART = '♥'
