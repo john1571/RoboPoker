@@ -4,6 +4,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import random
 import Bots.Register as Register
+import Dealer.Parse_Config as Dealer_Config
 import pack
 import Logging
 import game_play as gp
@@ -85,8 +86,13 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
                 if current_bet < big_blind:
                     current_bet = big_blind
                 big_blind = 0
+            bet_pause = 2
+            try:
+                bet_pause = int(Dealer_Config.parse("bet_pause"))
+            except:
+                pass
 
-            CI.print_status(all_players, bets, player, pot, table, globals.g_user, 2)
+            CI.print_status(all_players, bets, player, pot, table, globals.g_user, bet_pause)
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
             round_history.append((player, bet))
             if bet is None:
@@ -116,7 +122,12 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             if bets[player.name] < current_bet:
                 Betting_done = False
                 break
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 2)
+    deal_pause = 2
+    try:
+        deal_pause = int(Dealer_Config.parse("win_pause"))
+    except:
+        pass
+    CI.print_status(all_players, bets, None, pot, table, globals.g_user, deal_pause)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for player in players:
