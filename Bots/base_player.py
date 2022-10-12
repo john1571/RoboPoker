@@ -25,10 +25,12 @@ class Player:
         self.hand = hands.Hand(self.id)
         self.type = self.bot_type()
         self.stats = b.Stats(self.chips)
+        self.chips_in_pot = 0
 
     def new_hand(self):
         self.folded = False
         self.hand = hands.Hand(self.id)
+        self.chips_in_pot = 0
         if self.chips <= 0:
             self.bust()
         else:
@@ -64,9 +66,11 @@ class Player:
                 self.chips = 0
                 if globals.g_user_playing:
                     print(self.name + " goes all in with " + str(new_bet + my_bet))
+                self.chips_in_pot += new_bet
                 return new_bet
             new_bet = round(new_bet)
             self.chips -= new_bet
+            self.chips_in_pot += new_bet
         if globals.g_user_playing:
             if new_bet is 0:
                 print(self.name + " checks")

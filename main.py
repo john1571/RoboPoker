@@ -97,7 +97,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
 
             if bets[player.name] < current_bet:
                 if player.all_in:
-                    loc_side_pots[player.name] = bets[player.name]
+                    loc_side_pots[player.name] = player.chips_in_pot
                 else:
                     fold_player(player, bets)
                 continue
@@ -106,7 +106,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             elif player.all_in:
                 current_bet = bets[player.name]
                 if player.name not in loc_side_pots.keys():
-                    loc_side_pots[player.name] = bets[player.name]
+                    loc_side_pots[player.name] = player.chips_in_pot
             elif bets[player.name] != current_bet:
                 assert False
         Betting_done = True
@@ -116,14 +116,16 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             if bets[player.name] < current_bet:
                 Betting_done = False
                 break
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 5)
+    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 0)
     for name in loc_side_pots.keys():
         side_pot_value = 0
-        for bet in bets.values():
-            if bet > loc_side_pots[name]:
+        for player in players:
+            if player.name == name:
+                continue
+            if player.chips_in_pot > loc_side_pots[name]:
                 side_pot_value += loc_side_pots[name]
             else:
-                side_pot_value += bet
+                side_pot_value += player.chips_in_pot
         side_pots[name] = side_pot_value
     return pot, side_pots
 

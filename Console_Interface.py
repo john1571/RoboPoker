@@ -54,7 +54,7 @@ def pad_string(string, string_length = column_width, num_tabs = column_tabs):
     return string + tabs
 
 
-def print_status(players, bets, current_actor, pot, table, user, sleep=2):
+def print_status(players, bets, current_actor, pot, table, user, sleep=0):
     if globals.g_watch:
         if (current_actor):
             print("Round:\t" + str(current_actor.stats.rounds))
