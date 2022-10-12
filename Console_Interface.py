@@ -1,4 +1,3 @@
-import os
 import time
 import globals
 
@@ -55,25 +54,30 @@ def pad_string(string, string_length = column_width, num_tabs = column_tabs):
 
 
 def print_status(players, bets, current_actor, pot, table, user, sleep=0):
+    stats_only = False
+    if not bets or not table:
+        stats_only = True
     if globals.g_watch:
-        if (current_actor):
-            print("Round:\t" + str(current_actor.stats.rounds))
-        line_1 = "Table:\t" + table.show()
         name_line = pad_string("Names:")
         bot_type_line = pad_string("Bots:")
         player_chips = pad_string("Chips:")
-        player_hands = pad_string("Hands:")
-        hands_string = pad_string("Values:")
-        bets_string =  pad_string("Bets:")
-        last_round = pad_string("Last:")
-        average_win =  pad_string("Av. W.:")
+        average_win = pad_string("Av. W.:")
         average_loss = pad_string("Av. L.:")
         average_delta = pad_string("Av. D.:")
         percent_won = pad_string("Win %:")
         local_sleep = sleep
+        player_hands = ""
+        hands_string = ""
+        bets_string = ""
+        last_round = ""
+        if not stats_only:
+            line_1 = "Table:\t" + table.show()
+            player_hands = pad_string("Hands:")
+            hands_string = pad_string("Values:")
+            bets_string =  pad_string("Bets:")
+            last_round = pad_string("Last:")
+
         for player in players:
-            if player.busted:
-                continue
             if player == current_actor:
                 name_line += ">"
                 name_line += pad_string(player.name, column_width - 1)
@@ -85,30 +89,42 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=0):
 
             chips_string = ""
             if player.busted:
-                chips_string = " OUT"
+                chips_string = pad_string("--")
             else:
                 chips_string = pad_num_to_string(player.chips)
             player_chips += chips_string
+            if not stats_only:
+                if player.busted:
+                    player_hands += pad_string("")
+                    hands_string += pad_string("")
+                    bets_string += pad_string("")
+                    last_round += pad_string("")
+                else:
+                    last_delta = pad_num_to_string(player.stats.last_delta)
+                    last_round += last_delta
+                    if player.hand:
+                        if player.folded:
+                            player_hands += pad_string("--")
+                            hands_string += pad_string("--")
+                        else:
+                            player_hands += player.hand.show_for_print() + pad_string("", column_width - 5)
+                            hands_string += pad_string(player.hand.get_hand_string(table))
+                    else:
+                        player_hands += pad_string("")
+                    if player.folded:
+                        bets_string += pad_string("fold")
+                    elif player.busted:
+                        bets_string += pad_string("--")
+                    else:
+                        bets_string += pad_num_to_string(bets[player.name])
 
-            if player.hand:
-                player_hands += player.hand.show_for_print() + pad_string("", column_width - 5)
-                hands_string += pad_string(player.hand.get_hand_string(table))
-            else:
-                player_hands += pad_string("")
-            if player.folded:
-                bets_string += pad_string("fold")
-            elif player.busted:
-                bets_string += pad_string("--")
-            else:
-                bets_string += pad_num_to_string(bets[player.name])
             win_average = pad_num_to_string(player.stats.av_win())
             average_win += win_average
             loss_average = pad_num_to_string(player.stats.av_loss())
             average_loss += loss_average
             win_percent = pad_num_to_string(player.stats.percent_won(), column_width - 1, column_tabs, '%')
             percent_won += win_percent
-            last_delta = pad_num_to_string(player.stats.last_delta)
-            last_round += last_delta
+
             av_delta = pad_num_to_string(player.stats.av_delta())
             average_delta += av_delta
         print("\n\n\n\n\n")
@@ -116,17 +132,20 @@ def print_status(players, bets, current_actor, pot, table, user, sleep=0):
             print("Round: " + str(current_actor.stats.rounds))
         else:
             print("")
-        print("Pot: " + str(pot) + "\tTable: ", end="")
-        print(table.show_with_color())
+        if table:
+            print("Pot: " + str(pot) + "\tTable: ", end="")
+            print(table.show_with_color())
         print(name_line)
         print(bot_type_line)
         print(player_chips)
-        print(player_hands)
-        print(hands_string)
-        print(bets_string)
+        if not stats_only:
+            print(player_hands)
+            print(hands_string)
+            print(bets_string)
         print("\nStats:")
         print(name_line)
-        print(last_round)
+        if not stats_only:
+            print(last_round)
         print(average_delta)
         print(average_win)
         print(average_loss)

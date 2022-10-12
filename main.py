@@ -86,7 +86,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
                     current_bet = big_blind
                 big_blind = 0
 
-            CI.print_status(players, bets, player, pot, table, globals.g_user)
+            CI.print_status(all_players, bets, player, pot, table, globals.g_user, 2)
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
             round_history.append((player, bet))
             if bet is None:
@@ -116,7 +116,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             if bets[player.name] < current_bet:
                 Betting_done = False
                 break
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 0)
+    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 2)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for player in players:
