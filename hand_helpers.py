@@ -1,6 +1,6 @@
 import pack as p
 
-STRAIGHT_FLUSH = 1000
+STRAIGHT_FLUSH = 1300
 FOUR_OF_A_KIND = 900
 FULL_HOUSE = 800
 FLUSH = 700
@@ -152,16 +152,24 @@ class Hand:
         self.value = 0
         if len(self.cards) <= 0:
             return 0
+        flush_cards = self.has_flush()
+        if flush_cards and straight_in_array(flush_cards):
+            self.value += STRAIGHT_FLUSH
+            self.has_straight_flush = True
+            for value in flush_cards:
+                self.value += p.rank_to_value(value)
+            return self.value
+
         if len(self.four) > 0:
             self.value += FOUR_OF_A_KIND
             self.value += self.four[0]
             return self.value
-        flush_cards = self.has_flush()
+        if self.has_full_house()
+            self.value += FULL_HOUSE
+            self.value += self.has_full_house()
+            return self.value
         if flush_cards:
             self.value += FLUSH
-            if straight_in_array(flush_cards):
-                self.value += STRAIGHT
-                self.has_full_house = True
             for value in flush_cards:
                 self.value += p.rank_to_value(value)
             return self.value
@@ -241,7 +249,17 @@ class Hand:
             return "hi c"
 
     def has_full_house(self):
-        return self.has_full_house
+        sets = self.has_set():
+        if not sets:
+            return False
+        if len(sets) > 1:
+            set_val = max(sets)
+            self.has_full_house
+            return set_val
+        if not self.has_pair()
+            return False
+        self.has_full_house
+        return sets[0]
 
     def has_flush(self):
         if len(self.hearts) > 4:
