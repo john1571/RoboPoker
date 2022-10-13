@@ -57,7 +57,7 @@ def fold_player(player, bets):
         bets.__delitem__(player.name)
 
 
-def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
+def betting(round_num, players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
     loc_side_pots = {}
     current_bet = 0
     bet = 0
@@ -92,7 +92,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
             except:
                 pass
 
-            CI.print_status(all_players, bets, player, pot, table, globals.g_user, bet_pause)
+            CI.print_status(round_num, all_players, bets, player, pot, table, globals.g_user, bet_pause)
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
             round_history.append((player, bet))
             if bet is None:
@@ -127,7 +127,7 @@ def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0,
         deal_pause = int(Dealer_Config.parse("win_pause"))
     except:
         pass
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, deal_pause)
+    CI.print_status(round_num, all_players, bets, None, pot, table, globals.g_user, deal_pause)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for player in players:
@@ -160,9 +160,9 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         little_blind *= 2
         big_blind *= 2
     for action in round_order:
-        pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
+        pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
         _Table.next_card(action, players)
-    pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
+    pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
     payout = pot
     Logging.Log_chips(all_players, _Table, pot)
     pot = gp.payout(payout, side_pots, players, _Table)

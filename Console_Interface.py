@@ -1,6 +1,6 @@
 import time
 import globals
-
+import Dealer.Parse_Config as Dealer_config
 divideder = "\n**********\n"
 showdown = False
 user_bets_status = []  # User name, bet
@@ -53,7 +53,9 @@ def pad_string(string, string_length = column_width, num_tabs = column_tabs):
     return string + tabs
 
 
-def print_status(players, bets, current_actor, pot, table, user, sleep=0):
+def print_status(round_num, players, bets, current_actor, pot, table, user, sleep=0):
+    if int(Dealer_config.parse("skip_to_round")) > round_num:
+        sleep = 0
     stats_only = False
     if not bets or not table:
         stats_only = True
