@@ -11,6 +11,7 @@ def parse(key):
         while line:
             key_length = len(key)
             if len(line) < key_length:
+                line = config.readline()
                 continue
             if line[:key_length] == key:
                 values = line.split("=")
