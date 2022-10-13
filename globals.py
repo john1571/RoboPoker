@@ -8,3 +8,5 @@ DEAL = 0
 FLOP = 3
 TURN = 1
 RIVER = 1
+
+g_animate = True

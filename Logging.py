@@ -1,11 +1,16 @@
 import os
 from datetime import datetime
-
+import globals
+import Animate.animate as Animate
 dt = datetime.now()
 log_file = os.getcwd() + "\\Logs\\LogFile" + \
            dt.strftime('%Y-%m-%d_%H-%M-%S') + ".csv"
 
+animation_log = ""
+
 def Log_chips(players, table, pot):
+    if globals.g_animate:
+        Animate.Log_for_animation(players)
     if not os.path.exists(log_file) or os.stat(log_file).st_size == 0:
         with open(log_file, "w") as log:
             for player in players:
