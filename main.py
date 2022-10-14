@@ -11,6 +11,8 @@ import game_play as gp
 import globals
 import Console_Interface as CI
 import table as t
+import Animate.animate as ani
+
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
 All_players = []
@@ -164,8 +166,8 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         _Table.next_card(action, players)
     pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
     payout = pot
-    Logging.Log_chips(all_players, _Table, pot)
     pot = gp.payout(payout, side_pots, players, _Table)
+    Logging.Log_chips(all_players, _Table, pot)
 
     for player in players:
         player.new_hand()
@@ -180,6 +182,7 @@ def play(num_starting_players):
     little_blind = 5
     big_blind = 10
     pot = 0
+    ani.start_log(all_players)
     for round in range(0, 1000):
         dealer_num += 1
         if round == 0:

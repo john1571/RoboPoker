@@ -1,18 +1,25 @@
 import os
-import matplotlib as mpl
+import matplotlib.animation as mpla
 import matplotlib.pyplot as plt
-
-log_file = os.getcwd() + "\\Animated_Logs\\animation.txt"
+import time
+if "Animate" in os.getcwd():
+    log_file = os.getcwd() + "\\Animated_Logs\\animation.txt"
+else:
+    log_file = os.getcwd() + "\\Animate\\Animated_Logs\\animation.txt"
 plots = {}
+
+
+def start_log(players):
+    with open(log_file, "w") as log:
+        for player in players:
+            log.write(player.name + ' - ' + player.type + ',')
+        log.write("\n")
+
 def Log_for_animation(players):
-    if not os.path.exists(log_file) or os.stat(log_file).st_size == 0:
-        with open(log_file, "w") as log:
-            for player in players:
-                log.write(player.name + ' - ' + player.type + ',')
-                plots[player.name] = []
-        with open(log_file, "a") as log:
-            for player in players:
-                log.write(str(player.chips) + ',')
+    with open(log_file, "a") as log:
+        for player in players:
+            log.write(str(player.chips) + ',')
+        log.write("\n")
 
 def IsInt(character):
     try:
@@ -20,43 +27,48 @@ def IsInt(character):
         return True
     except:
         return False
-
-def plot():
+fig, ax = plt.subplots()
+def _plot(i):
     print(os.getcwd())
     if not os.path.exists(log_file):
         return False
-    print("there")
-    if not plots:
-        plots["player1"] = []
-        plots["player2"] = []
     j = 0
     with open(log_file, "r") as log:
         name_line = log.readline()
+        names = name_line.split(",")
+        names.pop()
+        for name in names:
+            plots[name] = []
         line = log.readline()
         while line:
             values = line.split(",")
             i = 0
             for names in plots.keys():
-                plots[names].append(values[i])
+                plots[names].append(int(values[i]))
                 i += 1
             line = log.readline()
             j += 1
 
     y = []
-
-    print("here")
     for i in range(0, j):
         y.append(i)
 
-    print(y)
-    print(plots)
+    sets = []
+    ax.clear()
     for name, set in plots.items():
-        print(name)
-        print(set)
-        plt.plot(y, set)
+        sets.append(y)
+        sets.append(set)
+        ax.plot(y, set, label=name)
+    ax.legend(bbox_to_anchor=(0, 1, 1, .1), ncol=2, mode="expand", loc="lower left")
+    fig.savefig("figure.pdf")
+
+
+
+
+def animate():
+    anim =  mpla.FuncAnimation(fig, _plot, interval=500)
+    fig.show()
     plt.show()
 
-
 if __name__ == '__main__':
-    print("hi")
-    plot()
+    animate()
