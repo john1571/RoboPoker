@@ -182,7 +182,8 @@ def play(num_starting_players):
     little_blind = 5
     big_blind = 10
     pot = 0
-    ani.start_log(all_players)
+    if globals.g_animate:
+        ani.start_log(all_players)
     for round in range(0, 1000):
         dealer_num += 1
         if round == 0:
