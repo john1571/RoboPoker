@@ -80,7 +80,6 @@ class Hand:
         self.singles = []
         self.has_straight_flush = False
         self.has_four_of_a_kind = False
-        self.has_full_house = False
         self.value = 0
         self.value_dictionary = {}
 
@@ -164,7 +163,7 @@ class Hand:
             self.value += FOUR_OF_A_KIND
             self.value += self.four[0]
             return self.value
-        if self.has_full_house()
+        if self.has_full_house():
             self.value += FULL_HOUSE
             self.value += self.has_full_house()
             return self.value
@@ -180,22 +179,6 @@ class Hand:
         if self.has_set():
             sets = self.has_set()
             high_set_value = max(sets)
-            if len(sets) > 1:
-                self.has_full_house = True
-                self.value += FULL_HOUSE
-                self.value += high_set_value
-                return self.value
-            elif self.has_pair():
-                pairs = self.has_pair()
-                other_pair_values = []
-                for x in pairs:
-                    if x != high_set_value:
-                        other_pair_values.append(x)
-                if other_pair_values:
-                    self.has_full_house = True
-                    self.value += FULL_HOUSE
-                    self.value += high_set_value
-                    return self.value
             self.value += SET
             self.value += high_set_value
             return self.value
@@ -232,7 +215,7 @@ class Hand:
             return "Str Flsh"
         elif self.has_four():
             return "4-o-kind"
-        elif self.has_full_house:
+        elif self.has_full_house():
             return "fll hous"
         elif self.has_flush():
             return "flush"
@@ -249,16 +232,14 @@ class Hand:
             return "hi card"
 
     def has_full_house(self):
-        sets = self.has_set():
+        sets = self.has_set()
         if not sets:
             return False
         if len(sets) > 1:
             set_val = max(sets)
-            self.has_full_house
             return set_val
-        if not self.has_pair()
+        if not self.has_pair():
             return False
-        self.has_full_house
         return sets[0]
 
     def has_flush(self):
