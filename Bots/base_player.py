@@ -3,6 +3,7 @@ import globals
 import time
 import Bots.bot_helpers as b
 
+
 class Actions:
     fold = 0
     call = 1
@@ -12,24 +13,20 @@ class Actions:
 
 
 class Player:
-    def __init__(self, name, chips, id=None):
+    def __init__(self, name, chips):
         self.name = name
-        if id:
-            self.id = id
-        else:
-            self.id = name
         self.chips = chips
         self.busted = False
         self.folded = False
         self.all_in = False
-        self.hand = hands.Hand(self.id)
+        self.hand = hands.Hand(self.name)
         self.type = self.bot_type()
         self.stats = b.Stats(self.chips)
         self.chips_in_pot = 0
 
     def new_hand(self):
         self.folded = False
-        self.hand = hands.Hand(self.id)
+        self.hand = hands.Hand(self.name)
         self.chips_in_pot = 0
         if self.chips <= 0:
             self.bust()
@@ -50,9 +47,8 @@ class Player:
         else:
             return bet - my_bet
 
-
-    def outer_act(self, bet, my_bet, table, actions, pot, forced = 0):
-        if globals.g_user_playing:
+    def outer_act(self, bet, my_bet, table, actions, pot, forced=0):
+        if globals.USER_PLAYING:
             time.sleep(1)
         if forced == 0:
             new_bet = self.act(bet, my_bet, table, actions, pot)
@@ -64,14 +60,14 @@ class Player:
                 self.all_in = True
                 new_bet = round(self.chips)
                 self.chips = 0
-                if globals.g_user_playing:
+                if globals.USER_PLAYING:
                     print(self.name + " goes all in with " + str(new_bet + my_bet))
                 self.chips_in_pot += new_bet
                 return new_bet
             new_bet = round(new_bet)
             self.chips -= new_bet
             self.chips_in_pot += new_bet
-        if globals.g_user_playing:
+        if globals.USER_PLAYING:
             if new_bet is 0:
                 print(self.name + " checks")
             elif new_bet:

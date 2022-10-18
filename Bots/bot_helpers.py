@@ -1,6 +1,5 @@
-import pack as p
 import hand_helpers as hh
-import math
+
 
 def value_of(cards, name='jehosephat'):
     hand = hh.Hand(name)
@@ -12,10 +11,12 @@ def value_of(cards, name='jehosephat'):
 def call(bet, my_bet):
     return bet - my_bet
 
+
 def average(array):
     if len(array) < 1:
         return 0
     return round(sum(array)/len(array))
+
 
 class Stats:
     def __init__(self, chips):

@@ -6,6 +6,7 @@ import Bots.JoanBot1
 import Bots.JPBot4
 import Bots.Calling_Station
 
+
 def register():
     return [
         base_player.Player,

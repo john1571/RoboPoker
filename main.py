@@ -15,15 +15,14 @@ import Animate.animate as ani
 
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
-All_players = []
 
 
 def init_players(num=5, chips=1000):
-    All_players = []
-    for int in range(0, num):
+    all_players = []
+    for j in range(0, num):
         i = random.randint(0, len(Register.register()) - 1)
-        new_player = Register.register()[i](names[int], chips)
-        for player in All_players:
+        new_player = Register.register()[i](names[j], chips)
+        for player in all_players:
             if not player:
                 break
             while player.bot_type() == new_player.bot_type():
@@ -31,25 +30,9 @@ def init_players(num=5, chips=1000):
                     i = 0
                 else:
                     i += 1
-                new_player = Register.register()[i](names[int], chips)
-        All_players.append(new_player)
-    return All_players
-
-
-def update_player_chips(players):
-    All_players = players
-
-
-def get_all_players():
-    return All_players
-
-
-def get_players_at_table():
-    players = []
-    for player in All_players:
-        if not player.busted:
-            players.append(player)
-    return players
+                new_player = Register.register()[i](names[j], chips)
+        all_players.append(new_player)
+    return all_players
 
 
 def fold_player(player, bets):
@@ -62,15 +45,13 @@ def fold_player(player, bets):
 def betting(round_num, players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
     loc_side_pots = {}
     current_bet = 0
-    bet = 0
     bets = {}  # player, bet
     for player in players:
         bets[player.name] = 0
-    Betting_done = False
-    side_pots = {}
+    betting_done = False
     round_history = []
     first_round = True
-    while not Betting_done:
+    while not betting_done:
         for player in players:
             if first_round:
                 if player is dealer:
@@ -94,7 +75,7 @@ def betting(round_num, players, table, pot, side_pots, dealer, all_players, litt
             except:
                 pass
 
-            CI.print_status(round_num, all_players, bets, player, pot, table, globals.g_user, bet_pause)
+            CI.print_status(round_num, all_players, bets, player, pot, table, bet_pause)
             bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
             round_history.append((player, bet))
             if bet is None:
@@ -117,19 +98,19 @@ def betting(round_num, players, table, pot, side_pots, dealer, all_players, litt
                     loc_side_pots[player.name] = player.chips_in_pot
             elif bets[player.name] != current_bet:
                 assert False
-        Betting_done = True
+        betting_done = True
         for player in players:
             if player.folded or player.all_in:
                 continue
             if bets[player.name] < current_bet:
-                Betting_done = False
+                betting_done = False
                 break
     deal_pause = 2
     try:
         deal_pause = int(Dealer_Config.parse("win_pause"))
     except:
         pass
-    CI.print_status(round_num, all_players, bets, None, pot, table, globals.g_user, deal_pause)
+    CI.print_status(round_num, all_players, bets, None, pot, table, deal_pause)
     for name in loc_side_pots.keys():
         side_pot_value = 0
         for player in players:
@@ -147,7 +128,7 @@ round_order = [globals.FLOP, globals.TURN, globals.RIVER]
 
 
 def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind):
-    _Table = t.Table(pack.getDeck())
+    _Table = t.Table(pack.get_deck())
     side_pots = {}
     players = []
     for person in all_players:
@@ -167,7 +148,7 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
     pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
     payout = pot
     pot = gp.payout(payout, side_pots, players, _Table)
-    Logging.Log_chips(all_players, _Table, pot)
+    Logging.log_chips(all_players, _Table, pot)
 
     for player in players:
         player.new_hand()
@@ -182,13 +163,13 @@ def play(num_starting_players):
     little_blind = 5
     big_blind = 10
     pot = 0
-    if globals.g_animate:
+    if globals.ANIMATE:
         ani.start_log(all_players)
-    for round in range(0, 1000):
+    for round_num in range(0, 1000):
         dealer_num += 1
-        if round == 0:
-            Logging.Log_chips(all_players, None, 0)
-        pot, little_blind, big_blind = deal_round(round, dealer_num, all_players, pot, little_blind, big_blind)
+        if round_num == 0:
+            Logging.log_chips(all_players, None, 0)
+        pot, little_blind, big_blind = deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         ended = False
         num_busted = 0
         for player in all_players:

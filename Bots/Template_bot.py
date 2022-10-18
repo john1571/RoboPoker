@@ -5,7 +5,7 @@ import Bots.bot_helpers as b
 # Add your bot class in the Register array.
 # Watch it compete
 
-class YOUR_BOT_NAME(bp.Player):
+class YourBotName(bp.Player):
     # bet: current bet at the table.
     # my_bet: amount of money you have already put in the pot
     # actions: a dictionary of actions from other players

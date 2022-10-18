@@ -1,6 +1,7 @@
 from Bots import base_player as bp
 import Bots.bot_helpers as b
 
+
 class Bot3(bp.Player):
     def act(self, bet, my_bet, table=None, actions=None, pot=None):  # actions = dictionary: {name: amount}
         def call():

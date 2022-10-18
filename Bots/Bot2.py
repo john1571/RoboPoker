@@ -1,6 +1,7 @@
 from Bots import base_player as bp
 import random
 
+
 class Bot2(bp.Player):
     def act(self, bet, my_bet, table=None, actions=None, pot=None):  # actions = dictionary: name:(action, amount)
         if self.hand.get_value() > 310:

@@ -65,6 +65,7 @@ Shorthand = {
     'As': p.Card('♠', 'A'),
 }
 
+
 class Hand:
     def __init__(self, name):
         self.name = name
@@ -126,28 +127,24 @@ class Hand:
             card.print_with_color()
         for card in get_table_cards(table):
             self.add_card(card, table)
-        print_string += str(self.get_value(table)) + '\t'
+        print_string += str(self.get_value()) + '\t'
         if self.has_flush():
             print_string += "FLUSH"
-            #print_string += str(self.has_flush())
         elif self.has_straight():
             print_string += "STRAIGHT!"
-            #print(self.has_straight())
         elif self.has_set():
             print_string += "THREE!"
-            #print(self.has_set())
         elif len(self.has_pair()) > 1:
             print_string += "TWO PAIR!"
         elif self.has_pair():
             print_string += "PAIR!"
-            #print(self.has_pair())
         else:
             print_string += "Hi card"
         if print_now:
             print(print_string)
         return print_string
 
-    def get_value(self, table=None):
+    def get_value(self):
         self.value = 0
         if len(self.cards) <= 0:
             return 0

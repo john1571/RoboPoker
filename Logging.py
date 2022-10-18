@@ -8,9 +8,10 @@ log_file = os.getcwd() + "\\Logs\\LogFile" + \
 
 animation_log = ""
 
-def Log_chips(players, table, pot):
-    if globals.g_animate:
-        Animate.Log_for_animation(players)
+
+def log_chips(players, table, pot):
+    if globals.ANIMATE:
+        Animate.log_for_animation(players)
     if not os.path.exists(log_file) or os.stat(log_file).st_size == 0:
         with open(log_file, "w") as log:
             for player in players:

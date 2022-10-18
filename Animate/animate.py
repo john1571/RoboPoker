@@ -1,7 +1,7 @@
 import os
 import matplotlib.animation as mpla
 import matplotlib.pyplot as plt
-import time
+
 if "Animate" in os.getcwd():
     log_file = os.getcwd() + "\\Animated_Logs\\animation.txt"
 else:
@@ -15,19 +15,25 @@ def start_log(players):
             log.write(player.name + ' - ' + player.type + ',')
         log.write("\n")
 
-def Log_for_animation(players):
+
+def log_for_animation(players):
     with open(log_file, "a") as log:
         for player in players:
             log.write(str(player.chips) + ',')
         log.write("\n")
 
-def IsInt(character):
+
+def is_int(character):
     try:
         i = int(character)
         return True
     except:
         return False
+
+
 fig, ax = plt.subplots()
+
+
 def _plot(i):
     print(os.getcwd())
     if not os.path.exists(log_file):
@@ -55,20 +61,19 @@ def _plot(i):
 
     sets = []
     ax.clear()
-    for name, set in plots.items():
+    for name, chips_array in plots.items():
         sets.append(y)
-        sets.append(set)
-        ax.plot(y, set, label=name)
+        sets.append(chips_array)
+        ax.plot(y, chips_array, label=name)
     ax.legend(bbox_to_anchor=(0, 1, 1, .1), ncol=2, mode="expand", loc="lower left")
     fig.savefig("figure.pdf")
 
 
-
-
 def animate():
-    anim =  mpla.FuncAnimation(fig, _plot, interval=500)
+    anim = mpla.FuncAnimation(fig, _plot, interval=500)
     fig.show()
     plt.show()
+
 
 if __name__ == '__main__':
     animate()

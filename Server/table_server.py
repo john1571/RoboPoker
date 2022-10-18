@@ -7,12 +7,14 @@ import Server.libserver as libserver
 
 sel = selectors.DefaultSelector()
 
+
 def accept_wrapper(sock):
-    conn, addr = sock.accept() # should be ready to read
+    conn, addr = sock.accept()  # should be ready to read
     print(f"Accepted connection from {addr}")
     conn.setblocking(False)
     message = libserver.Message(sel, conn, addr)
     sel.register(conn, selectors.EVENT_READ, data=message)
+
 
 def run_server():
     host, port = sys.argv[1], int(sys.argv[2])
@@ -20,13 +22,13 @@ def run_server():
     # Avoid bind() exception: OSError: [Errno 48] Address already in use
     lsock.setsockopt
 
+
 def table_server():
     # set hostname
 
     # check for available socket
-        # check for connections
+    # check for connections
     # deal
-
 
     # get the hostname
     host = socket.gethostname()
@@ -55,7 +57,7 @@ def table_server():
             conn.send(data.encode())  # send data to the client
         data2 = conn2.recv(1024).decode()
         if not data2:
-           break
+            break
         if data2:
             print("from connected user: " + str(data2))
             data2 = input(' -> ')

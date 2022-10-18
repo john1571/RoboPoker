@@ -1,5 +1,6 @@
 import globals
 
+
 def get_winners(players, rewarded_players, table):
     best_hand_value = 0
     winners = []
@@ -8,11 +9,10 @@ def get_winners(players, rewarded_players, table):
             continue
         if player.folded:
             continue
-        if player.hand.get_value(table) > best_hand_value:
-            winners = []
-            winners.append(player)
-            best_hand_value = player.hand.get_value(table)
-        elif player.hand.get_value(table) == best_hand_value:
+        if player.hand.get_value() > best_hand_value:
+            winners = [player]
+            best_hand_value = player.hand.get_value()
+        elif player.hand.get_value() == best_hand_value:
             winners.append(player)
     return winners
 
@@ -22,7 +22,7 @@ def payout_internal(pot, side_pots, players, winners, rewarded):
     for player in players:
         if player in winners:
             if player.name in side_pots.keys():
-                if globals.g_user_playing:
+                if globals.USER_PLAYING:
                     print(player.name + " wins " + str(side_pots[player.name] / num_split))
                 player.chips = round(side_pots[player.name] / num_split)
                 num_split -= 1
@@ -31,7 +31,7 @@ def payout_internal(pot, side_pots, players, winners, rewarded):
     for player in winners:
         if player not in rewarded:
             reward = round(pot / num_split)
-            if globals.g_user_playing:
+            if globals.USER_PLAYING:
                 print(player.name + " wins " + str(reward))
             player.chips += reward
             pot -= reward
@@ -43,7 +43,7 @@ def payout(pot, side_pots, players, table):
     for player in players:
         starting_total += player.chips
     starting_total += pot
-    if globals.g_user_playing:
+    if globals.USER_PLAYING:
         print("final pot: " + str(pot))
     loc_players = players
     rewarded_players = []
@@ -61,5 +61,3 @@ def payout(pot, side_pots, players, table):
         if starting_total + 3 <= end_total <= starting_total - 3:  # allow for rounding error
             print(end_total - starting_total)
     return pot
-
-

@@ -3,6 +3,7 @@ import os
 
 config_file = os.getcwd() + "\\Dealer\\config.ini"
 
+
 def parse(key):
     if not os.path.exists(config_file):
         return False

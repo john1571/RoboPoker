@@ -1,5 +1,4 @@
 from Bots import base_player as bp
-import random
 
 
 class CallingStation(bp.Player):

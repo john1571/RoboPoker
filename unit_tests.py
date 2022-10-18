@@ -2,6 +2,8 @@ import pack as p
 import Bots.bot_helpers as b
 
 import hand_helpers
+
+
 def test_value(name, expected_value, cards):
     hand = hand_helpers.Hand(name)
     for card in cards:
@@ -30,7 +32,6 @@ def run_tests():
     four_value = b.value_of(['7h', '7d', '7c', '4d', '6h', '10s', '7s'])
     flush_value = b.value_of(['3h', '2h', 'Qh', '4h', '6h', '10s', '7d'])
     assert four_value > flush_value
-
 
 
 HEART = '♥'

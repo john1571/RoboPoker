@@ -1,9 +1,6 @@
 from Bots import base_player as bp
 import Bots.bot_helpers as b
 
-# Copy this template to create a new bot.
-# Add your bot class in the Register array.
-# Watch it compete
 
 class Bot4(bp.Player):
     # bet: current bet at the table.
@@ -29,7 +26,7 @@ class Bot4(bp.Player):
         if pot > (bet - my_bet)*20:
             if bet - my_bet > self.chips:
                 if num_cards == 2:
-                    if hand_value > b.value_of(['8h','8d']):
+                    if hand_value > b.value_of(['8h', '8d']):
                         return all_in()
                     else:
                         return fold()
@@ -357,6 +354,5 @@ class Bot4(bp.Player):
                     else:
                         return fold()
 
-    # Change this function to return your bot type
     def bot_type(self):
         return "Bot4"

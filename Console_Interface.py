@@ -12,7 +12,8 @@ user_turn = False
 column_width = 8
 column_tabs = 2
 
-def pad_num_to_string(number, string_length= column_width, num_tabs = column_tabs, prefix = ''):
+
+def pad_num_to_string(number, string_length=column_width, num_tabs=column_tabs, prefix=''):
     padded_string = ""
     spaces_needed = string_length
     temp = number/10
@@ -36,7 +37,7 @@ def pad_num_to_string(number, string_length= column_width, num_tabs = column_tab
     return padded_string + prefix + str(number) + tabs
 
 
-def pad_string(string, string_length = column_width, num_tabs = column_tabs):
+def pad_string(string, string_length=column_width, num_tabs=column_tabs):
     tabs = ""
     for i in range(0, num_tabs):
         tabs += '\t'
@@ -53,13 +54,13 @@ def pad_string(string, string_length = column_width, num_tabs = column_tabs):
     return string + tabs
 
 
-def print_status(round_num, players, bets, current_actor, pot, table, user, sleep=0):
+def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
     if int(Dealer_config.parse("skip_to_round")) > round_num:
         sleep = 0
     stats_only = False
     if not bets or not table:
         stats_only = True
-    if globals.g_watch:
+    if globals.WATCH:
         name_line = pad_string("Names:")
         bot_type_line = pad_string("Bots:")
         player_chips = pad_string("Chips:")
