@@ -2,7 +2,7 @@ import hand_helpers as hands
 import globals
 import time
 import Bots.bot_helpers as b
-
+import game_play as gp
 
 class Actions:
     fold = 0
@@ -19,15 +19,19 @@ class Player:
         self.busted = False
         self.folded = False
         self.all_in = False
+        self.big_blind = False
         self.hand = hands.Hand(self.name)
         self.type = self.bot_type()
         self.stats = b.Stats(self.chips)
         self.chips_in_pot = 0
+        self.chips_in_round = 0
+
 
     def new_hand(self):
         self.folded = False
         self.hand = hands.Hand(self.name)
         self.chips_in_pot = 0
+        self.chips_in_round = 0
         if self.chips <= 0:
             self.bust()
         else:
@@ -47,31 +51,33 @@ class Player:
         else:
             return bet - my_bet
 
-    def outer_act(self, bet, my_bet, table, actions, pot, forced=0):
-        if globals.USER_PLAYING:
-            time.sleep(1)
+    def can_bet(self, players):
+        if self.folded or self.all_in or self.busted or self.chips_in_round >= gp.get_current_bet(players):
+            return False
+        return True
+
+    def outer_act(self, players, forced=0):
+        if not self.can_bet(players):
+            return 0
+        current_bet = gp.get_current_bet(players)
+        pot = gp.get_current_pot(players)
+
         if forced == 0:
-            new_bet = self.act(bet, my_bet, table, actions, pot)
+            new_bet = self.act(current_bet, self.chips_in_round, pot)
         else:
             new_bet = forced
         if new_bet:
-            new_bet = new_bet
             if new_bet >= self.chips:
                 self.all_in = True
                 new_bet = round(self.chips)
                 self.chips = 0
-                if globals.USER_PLAYING:
-                    print(self.name + " goes all in with " + str(new_bet + my_bet))
                 self.chips_in_pot += new_bet
+                self.chips_in_round += new_bet
                 return new_bet
             new_bet = round(new_bet)
             self.chips -= new_bet
             self.chips_in_pot += new_bet
-        if globals.USER_PLAYING:
-            if new_bet is 0:
-                print(self.name + " checks")
-            elif new_bet:
-                print(self.name + " bets " + str(new_bet + my_bet))
+            self.chips_in_round += new_bet
         return new_bet
 
     def add_card(self, card, table=None):

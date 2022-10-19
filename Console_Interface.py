@@ -55,7 +55,7 @@ def pad_string(string, string_length=column_width, num_tabs=column_tabs):
 
 
 def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
-    if int(Dealer_config.parse("skip_to_round")) > round_num:
+    if int(Dealer_config.parse("skip_to_round", 0)) > round_num:
         sleep = 0
     stats_only = False
     if not bets or not table:

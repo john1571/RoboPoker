@@ -1,6 +1,23 @@
 import globals
 
 
+def get_current_bet(players):
+    current_bet = 0
+    for player in players:
+        if player.folded or player.all_in or player.busted:
+            continue
+        if player.chips_in_round > current_bet:
+            current_bet = player.chips_in_round
+    return current_bet
+
+
+def get_current_pot(players):
+    pot = 0
+    for player in players:
+        pot += player.chips_in_round
+    return pot
+
+
 def get_winners(players, rewarded_players, table):
     best_hand_value = 0
     winners = []

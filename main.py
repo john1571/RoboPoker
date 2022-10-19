@@ -34,100 +34,53 @@ def init_players(num=5, chips=1000):
         all_players.append(new_player)
     return all_players
 
+def blinds(live_players, dealer, big_blind):
+    little_blind = round(big_blind/2)
+    button = live_players.get_at(dealer)
+    if button + 1 > len(live_players):
+        little_blind_player = live_players[0]
+        big_blind_player = live_players[1]
+    elif button + 2 > len(live_players):
+        little_blind_player = live_players[button + 1]
+        big_blind_player = live_players[0]
+    else:
+        little_blind_player = live_players[button + 1]
+        big_blind_player = live_players[button + 2]
+    little_blind_player.blind(little_blind)
+    big_blind_player.blind(big_blind)
 
-def fold_player(player, bets):
-    if player:
-        player.fold()
-    if player.name in bets.keys():
-        bets.__delitem__(player.name)
 
-
-def betting(round_num, players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
-    loc_side_pots = {}
+def done_betting(players):
     current_bet = 0
-    bets = {}  # player, bet
     for player in players:
-        bets[player.name] = 0
-    betting_done = False
-    round_history = []
-    first_round = True
-    while not betting_done:
-        for player in players:
-            if first_round:
-                if player is dealer:
-                    first_round = False
-                continue
-            if player.folded or player.all_in or (0 < current_bet == bets[player.name]):
-                continue
+        if player.folded or player.all_in or player.busted:
+            continue
+        if current_bet > player.chips_in_round:
+            return False
+        else:
+            current_bet = player.chips_in_round
+    return True
 
-            forced = 0
-            if little_blind > 0:
-                forced = little_blind
-                little_blind = 0
-            elif big_blind > 0:
-                forced = big_blind
-                if current_bet < big_blind:
-                    current_bet = big_blind
-                big_blind = 0
-            bet_pause = 2
-            try:
-                bet_pause = int(Dealer_Config.parse("bet_pause"))
-            except:
-                pass
 
-            CI.print_status(round_num, all_players, bets, player, pot, table, bet_pause)
-            bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
-            round_history.append((player, bet))
-            if bet is None:
-                fold_player(player, bets)
-                continue
-            pot += bet
-            bets[player.name] += bet
-
-            if bets[player.name] < current_bet:
-                if player.all_in:
-                    loc_side_pots[player.name] = player.chips_in_pot
-                else:
-                    fold_player(player, bets)
-                continue
-            elif bets[player.name] >= current_bet * 2:
-                current_bet = bets[player.name]
-            elif player.all_in:
-                current_bet = bets[player.name]
-                if player.name not in loc_side_pots.keys():
-                    loc_side_pots[player.name] = player.chips_in_pot
-            elif bets[player.name] != current_bet:
-                assert False
-        betting_done = True
-        for player in players:
-            if player.folded or player.all_in:
-                continue
-            if bets[player.name] < current_bet:
-                betting_done = False
-                break
-    deal_pause = 2
-    try:
-        deal_pause = int(Dealer_Config.parse("win_pause"))
-    except:
-        pass
-    CI.print_status(round_num, all_players, bets, None, pot, table, deal_pause)
-    for name in loc_side_pots.keys():
-        side_pot_value = 0
-        for player in players:
-            if player.name == name:
-                continue
-            if player.chips_in_pot > loc_side_pots[name]:
-                side_pot_value += loc_side_pots[name]
-            else:
-                side_pot_value += player.chips_in_pot
-        side_pots[name] = side_pot_value
-    return pot, side_pots
+def bet(live_players, on_index):
+    while not done_betting(live_players):
+        under_gun = live_players[on_index]
+        for player in live_players:
+            if player is under_gun:
+                on_index += 1
+                if on_index > len(live_players) - 1:
+                    on_index = 0
+                under_gun = live_players[on_index]
+                if not player.can_bet(live_players):
+                    continue
+                if player.outer_act(live_players) is None:
+                    player.fold()
 
 
 round_order = [globals.FLOP, globals.TURN, globals.RIVER]
 
 
-def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind):
+def deal_round(round_num, dealer_num, all_players):
     _Table = t.Table(pack.get_deck())
     side_pots = {}
     players = []
@@ -135,18 +88,14 @@ def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
         if not person.busted:
             person.new_hand()
             players.append(person)
-    if dealer_num >= len(players):
-        dealer_num = 0
-    dealer = players[dealer_num]
     _Table.deal(players)
     if round_num > 0 and round_num % 25 == 0:
         little_blind *= 2
         big_blind *= 2
     for action in round_order:
-        pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
+        bet(players, dealer_num)
         _Table.next_card(action, players)
-    pot, side_pots = betting(round_num, players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
-    payout = pot
+    payout = gp.get_current_pot(players)
     pot = gp.payout(payout, side_pots, players, _Table)
     Logging.log_chips(all_players, _Table, pot)
 
@@ -169,7 +118,7 @@ def play(num_starting_players):
         dealer_num += 1
         if round_num == 0:
             Logging.log_chips(all_players, None, 0)
-        pot, little_blind, big_blind = deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind)
+        deal_round(round_num, dealer_num, all_players)
         ended = False
         num_busted = 0
         for player in all_players:
