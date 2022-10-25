@@ -1,2 +1,5 @@
-Adam - bot3,Ben - Bot4,Caleb - bot1,Dan - bot2,Eli - base_player,
+Adam - Bot4,Ben - base_player,Caleb - bot2,Dan - bot1,Eli - JoanBot1,
 1000,1000,1000,1000,1000,
+1000,970,995,970,970,
+990,960,995,960,960,
+980,940,975,760,760,

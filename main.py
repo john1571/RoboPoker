@@ -40,9 +40,9 @@ def blinds(live_players, dealer_num, big_blind):
     if dealer_num + 1 >= len(live_players):
         little_blind_player = live_players[0]
         big_blind_player = live_players[1]
-        little_blind_player = live_players[dealer_num + 1]
     elif dealer_num + 2 >= len(live_players):
         big_blind_player = live_players[0]
+        little_blind_player = live_players[dealer_num + 1]
     else:
         little_blind_player = live_players[dealer_num + 1]
         big_blind_player = live_players[dealer_num + 2]
@@ -53,6 +53,8 @@ def blinds(live_players, dealer_num, big_blind):
 def done_betting(players):
     bets = []
     for player in players:
+        if player.folded or player.all_in or player.busted:
+            continue
         bets.append(player.chips_in_round)
     current_bet = max(bets)
     for player in players:
@@ -77,10 +79,12 @@ def bet(live_players, on_index, big_blind, _Table):
         on_index += 1
         if not under_gun.can_bet(live_players):
             debug_pot = gp.get_betting_round_pot(live_players)
+            if done_betting(live_players):
+                break
             continue
         if under_gun.outer_act(live_players) is None:
-            CI.print_status(None, live_players, under_gun, _Table)
             under_gun.fold()
+        CI.print_status(None, live_players, under_gun, _Table, "bet_pause")
         debug_pot = gp.get_current_pot(live_players)
         if done_betting(live_players):
             break
@@ -104,10 +108,11 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         for player in players:
             player.new_betting_round()
         bet(players, dealer_num + 1, blind, _Table)
-        CI.print_status(round_num, all_players, None, _Table)
+        CI.print_status(round_num, all_players, None, _Table, "round_pause")
 
     pot = gp.payout(players)
     Logging.log_chips(all_players, _Table, pot)
+    CI.print_status(round_num, all_players, None, _Table, "win_pause")
 
     for player in players:
         player.new_hand()
