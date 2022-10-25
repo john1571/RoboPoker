@@ -16,6 +16,7 @@ class Player:
     def __init__(self, name, chips):
         self.name = name
         self.chips = chips
+        self.has_bet = False
         self.busted = False
         self.folded = False
         self.all_in = False
@@ -26,6 +27,9 @@ class Player:
         self.chips_in_pot = 0
         self.chips_in_round = 0
 
+    def new_betting_round(self):
+        self.has_bet = False
+        self.chips_in_round = 0
 
     def new_hand(self):
         self.folded = False
@@ -52,7 +56,9 @@ class Player:
             return bet - my_bet
 
     def can_bet(self, players):
-        if self.folded or self.all_in or self.busted or self.chips_in_round >= gp.get_current_bet(players):
+        if self.folded or self.all_in or self.busted:
+            return False
+        if self.has_bet and self.chips_in_round >= gp.get_current_bet(players):
             return False
         return True
 
@@ -61,9 +67,9 @@ class Player:
             return 0
         current_bet = gp.get_current_bet(players)
         pot = gp.get_current_pot(players)
-
         if forced == 0:
-            new_bet = self.act(current_bet, self.chips_in_round, pot)
+            new_bet = self.act(current_bet, self.chips_in_round, None, None, pot)
+            self.has_bet = True
         else:
             new_bet = forced
         if new_bet:

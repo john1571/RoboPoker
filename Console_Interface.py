@@ -1,4 +1,6 @@
 import time
+
+import game_play
 import globals
 import Dealer.Parse_Config as Dealer_config
 divideder = "\n**********\n"
@@ -54,11 +56,11 @@ def pad_string(string, string_length=column_width, num_tabs=column_tabs):
     return string + tabs
 
 
-def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
-    if int(Dealer_config.parse("skip_to_round", 0)) > round_num:
+def print_status(round_num, players, current_actor, table, sleep=0):
+    if round_num and int(Dealer_config.parse("skip_to_round", 0)) > round_num:
         sleep = 0
     stats_only = False
-    if not bets or not table:
+    if not table:
         stats_only = True
     if globals.WATCH:
         name_line = pad_string("Names:")
@@ -77,7 +79,7 @@ def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
             line_1 = "Table:\t" + table.show()
             player_hands = pad_string("Hands:")
             hands_string = pad_string("Values:")
-            bets_string =  pad_string("Bets:")
+            bets_string = pad_string("Bets:")
             last_round = pad_string("Last:")
 
         for player in players:
@@ -119,7 +121,7 @@ def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
                     elif player.busted:
                         bets_string += pad_string("--")
                     else:
-                        bets_string += pad_num_to_string(bets[player.name])
+                        bets_string += pad_num_to_string(player.chips_in_round)
 
             win_average = pad_num_to_string(player.stats.av_win())
             average_win += win_average
@@ -136,7 +138,7 @@ def print_status(round_num, players, bets, current_actor, pot, table, sleep=0):
         else:
             print("")
         if table:
-            print("Pot: " + str(pot) + "\tTable: ", end="")
+            print("Pot: " + str(game_play.get_current_pot(players)) + "\tTable: ", end="")
             print(table.show_with_color())
         print(name_line)
         print(bot_type_line)
