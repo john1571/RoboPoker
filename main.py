@@ -95,7 +95,6 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         if not person.busted:
             person.new_hand()
             players.append(person)
-    _Table.deal(players)
     if round_num > 0 and round_num % 25 == 0:
         big_blind *= 2
 
