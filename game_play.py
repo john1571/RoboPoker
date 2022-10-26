@@ -40,14 +40,8 @@ def get_winners(players, rewarded_players):
     return winners
 
 
-def payout_internal(players, winners_names):
-    winners = []
-    num_split = len(winners_names)
-    for player in players:
-        if player.name not in winners_names:
-            continue
-        winners.append(player)
-
+def payout_internal(players, winners):
+    num_split = len(winners)
     sorted_winners = sort_winners(winners)
     i = 0
     while i < len(sorted_winners):
@@ -66,7 +60,10 @@ def payout_internal(players, winners_names):
 
         i += 1
         num_split -= 1
-    return winners_names
+    rewarded = []
+    for player in winners:
+        rewarded.append(player.name)
+    return rewarded
 
 
 def payout(players):
@@ -87,6 +84,7 @@ def payout(players):
     for player in players:
         end_total += player.chips
     if end_total != starting_total:
+        AssertionError("Chips discrepancy detected!")
         if starting_total + 3 <= end_total <= starting_total - 3:  # allow for rounding error
             print(end_total - starting_total)
     return get_current_pot(players)

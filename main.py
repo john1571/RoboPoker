@@ -60,7 +60,7 @@ def done_betting(players):
     for player in players:
         if player.folded or player.all_in or player.busted:
             continue
-        if current_bet > player.chips_in_round:
+        if not player.has_bet or current_bet > player.chips_in_round:
             return False
     return True
 
@@ -109,7 +109,6 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
             player.new_betting_round()
         bet(players, dealer_num + 1, blind, _Table)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
-
     pot = gp.payout(players)
     Logging.log_chips(all_players, _Table, pot)
     CI.print_status(round_num, all_players, None, _Table, "win_pause")
