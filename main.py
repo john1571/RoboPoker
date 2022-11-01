@@ -50,7 +50,22 @@ def blinds(live_players, dealer_num, big_blind):
     big_blind_player.outer_act(live_players, big_blind)
 
 
+def check_for_win(players):
+    remaining = []
+    for player in players:
+        if player.folded or player.all_in or player.busted:
+            continue
+        else:
+            remaining.append(player)
+    if len(remaining) == 1:
+        return remaining[0]
+    else:
+        return None
+
+
 def done_betting(players):
+    if check_for_win(players):
+        return True
     bets = []
     for player in players:
         if player.folded or player.all_in or player.busted:
