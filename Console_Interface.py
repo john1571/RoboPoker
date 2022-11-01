@@ -60,7 +60,7 @@ def print_status(round_num, players, current_actor, table, config_section=None):
     sleep = 0
     if config_section:
         sleep = int(Dealer_config.parse(config_section, 0))
-    if round_num and int(Dealer_config.parse("skip_to_round", 0)) > round_num:
+    if int(Dealer_config.parse("skip_to_round", 0)) > round_num:
         sleep = 0
     stats_only = False
     if not table:

@@ -65,7 +65,7 @@ def done_betting(players):
     return True
 
 
-def bet(live_players, on_index, big_blind, _Table):
+def bet(round_num, live_players, on_index, big_blind, _Table):
     if big_blind is not None:
         blinds(live_players, on_index, big_blind)
         on_index += 2
@@ -84,7 +84,7 @@ def bet(live_players, on_index, big_blind, _Table):
             continue
         if under_gun.outer_act(live_players) is None:
             under_gun.fold()
-        CI.print_status(None, live_players, under_gun, _Table, "bet_pause")
+        CI.print_status(round_num, live_players, under_gun, _Table, "bet_pause")
         debug_pot = gp.get_current_pot(live_players)
         if done_betting(live_players):
             break
@@ -107,7 +107,7 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         _Table.next_card(action, players)
         for player in players:
             player.new_betting_round()
-        bet(players, dealer_num + 1, blind, _Table)
+        bet(round_num, players, dealer_num + 1, blind, _Table)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     pot = gp.payout(players)
     Logging.log_chips(all_players, _Table, pot)
