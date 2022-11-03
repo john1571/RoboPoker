@@ -84,12 +84,12 @@ def bet(round_num, live_players, on_index, big_blind, _Table):
     if big_blind is not None:
         blinds(live_players, on_index, big_blind)
         on_index += 2
-    num_players = len(live_players)
+    num_players = len(live_players) - 1
     while True:
         debug_pot = gp.get_current_pot(live_players)
         debug_bet = gp.get_current_bet(live_players)
-        if on_index > num_players - 1:
-            on_index = 0
+        if on_index > num_players:
+            on_index = (num_players + 1) - on_index
         under_gun = live_players[on_index]
         on_index += 1
         if not under_gun.can_bet(live_players):
