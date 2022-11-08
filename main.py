@@ -60,7 +60,7 @@ def blinds(round_num, live_players, dealer_num, big_blind, _Table):
 def check_for_win(players):
     remaining = []
     for player in players:
-        if player.folded or player.all_in or player.busted:
+        if player.folded or player.busted:
             continue
         else:
             remaining.append(player)
