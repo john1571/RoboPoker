@@ -35,19 +35,26 @@ def init_players(num=5, chips=1000):
     return all_players
 
 
-def blinds(live_players, dealer_num, big_blind):
+def blinds(round_num, live_players, dealer_num, big_blind, _Table):
     little_blind = round(big_blind/2)
+    on_index = dealer_num
     if dealer_num + 1 >= len(live_players):
         little_blind_player = live_players[0]
         big_blind_player = live_players[1]
+        on_index = 2
     elif dealer_num + 2 >= len(live_players):
         big_blind_player = live_players[0]
         little_blind_player = live_players[dealer_num + 1]
+        on_index = 1
     else:
         little_blind_player = live_players[dealer_num + 1]
         big_blind_player = live_players[dealer_num + 2]
+        on_index = dealer_num + 3
     little_blind_player.outer_act(live_players, little_blind)
+    CI.print_status(round_num, live_players, little_blind_player, _Table, "bet_pause")
     big_blind_player.outer_act(live_players, big_blind)
+    CI.print_status(round_num, live_players, big_blind_player, _Table, "bet_pause")
+    return on_index
 
 
 def check_for_win(players):
@@ -71,6 +78,9 @@ def done_betting(players):
         if player.folded or player.all_in or player.busted:
             continue
         bets.append(player.chips_in_round)
+    if bets == []:
+        debug = bets
+
     current_bet = max(bets)
     for player in players:
         if player.folded or player.all_in or player.busted:
@@ -81,15 +91,18 @@ def done_betting(players):
 
 
 def bet(round_num, live_players, on_index, big_blind, _Table):
+    num_players = len(live_players)
+    if on_index >= num_players:
+        on_index = num_players - on_index
     if big_blind is not None:
-        blinds(live_players, on_index, big_blind)
-        on_index += 2
-    num_players = len(live_players) - 1
+        if on_index == len(live_players) - 2:
+            debug = True
+        on_index = blinds(round_num, live_players, on_index, big_blind, _Table)
     while True:
         debug_pot = gp.get_current_pot(live_players)
         debug_bet = gp.get_current_bet(live_players)
-        if on_index > num_players:
-            on_index = (num_players + 1) - on_index
+        if on_index >= num_players:
+            on_index = num_players - on_index
         under_gun = live_players[on_index]
         on_index += 1
         if not under_gun.can_bet(live_players):
@@ -122,7 +135,7 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         _Table.next_card(action, players)
         for player in players:
             player.new_betting_round()
-        bet(round_num, players, dealer_num + 1, blind, _Table)
+        bet(round_num, players, dealer_num, blind, _Table)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     pot = gp.payout(players)
     Logging.log_chips(all_players, _Table, pot)

@@ -28,7 +28,7 @@ def get_winners(players, rewarded_players):
     best_hand_value = 0
     winners = []
     for player in players:
-        if player in rewarded_players:
+        if player.name in rewarded_players:
             continue
         if player.folded:
             continue
