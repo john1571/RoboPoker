@@ -9,7 +9,7 @@ class YourBotName(bp.Player):
     # bet: current bet at the table.
     # my_bet: amount of money you have already put in the pot
     # actions: a dictionary of actions from other players
-    def act(self, bet, my_bet, table=None, actions=None, pot=None):  # actions = dictionary: {name: amount}
+    def act(self, bet, my_bet, table=None, actions=None, pot=None,  players_in_round=None):  # actions = dictionary: {name: amount}
         num_cards = self.get_num_cards()
         hand_value = self.get_hand_value()
         #self.hand.cards         # array of cards available (on the table and in your hand)
