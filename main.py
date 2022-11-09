@@ -161,6 +161,8 @@ def play(num_starting_players):
         dealer_num += 1
         if round_num == 0:
             Logging.log_chips(all_players, None, 0)
+        elif round_num % 25 == 0:
+            big_blind *= 2
         deal_round(round_num, dealer_num, all_players, big_blind)
         ended = False
         num_busted = 0
