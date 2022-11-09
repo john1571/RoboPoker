@@ -99,6 +99,8 @@ def bet(round_num, live_players, on_index, big_blind, _Table):
             debug = True
         on_index = blinds(round_num, live_players, on_index, big_blind, _Table)
     while True:
+        if done_betting(live_players):
+            break
         debug_pot = gp.get_current_pot(live_players)
         debug_bet = gp.get_current_bet(live_players)
         if on_index >= num_players:
