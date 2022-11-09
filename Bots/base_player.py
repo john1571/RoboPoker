@@ -49,7 +49,7 @@ class Player:
         self.folded = True
         return None
 
-    def act(self, bet, my_bet, table=None, actions=None, pot=None):
+    def act(self, bet, my_bet, table=None, actions=None, pot=None, players_in_round=None):
         if bet - my_bet > 50:
             return None
         else:
@@ -67,8 +67,13 @@ class Player:
             return 0
         current_bet = gp.get_current_bet(players)
         pot = gp.get_current_pot(players)
+        players_in_round = 0
+        for player in players:
+            if player.folded or player.busted:
+                continue
+            players_in_round += 1
         if forced == 0:
-            new_bet = self.act(current_bet, self.chips_in_round, None, None, pot)
+            new_bet = self.act(current_bet, self.chips_in_round, None, None, pot, players_in_round)
             self.has_bet = True
         else:
             new_bet = forced
