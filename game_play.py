@@ -77,16 +77,24 @@ def payout(players):
     while get_current_pot(players) > 1:
         count += 1
         winners = get_winners(loc_players, rewarded_players)
-        payout_internal(players, winners)
+        rewarded_players = rewarded_players + payout_internal(players, winners)
+        if winners == []:
+            print(winners)
+            print(rewarded_players)
+            print(count)
+            raise AssertionError
         if count > 20:
-            break
+            print(winners)
+            print(rewarded_players)
+            print(count)
+            raise AssertionError
     end_total = 0
     for player in players:
         end_total += player.chips
     if end_total != starting_total:
-        AssertionError("Chips discrepancy detected!")
         if starting_total + 3 <= end_total <= starting_total - 3:  # allow for rounding error
             print(end_total - starting_total)
+            raise AssertionError("Chips discrepancy detected!")
     return get_current_pot(players)
 
 
