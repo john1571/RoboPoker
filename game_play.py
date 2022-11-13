@@ -75,6 +75,10 @@ def payout(players):
     rewarded_players = []
     count = 0
     while get_current_pot(players) > 1:
+        if players[0].chips_in_pot == 5:
+            debug_break = True
+        if count > 1:
+            debug_left = get_current_pot(players)
         count += 1
         winners = get_winners(loc_players, rewarded_players)
         rewarded_players = rewarded_players + payout_internal(players, winners)

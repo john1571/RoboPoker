@@ -1,7 +1,7 @@
 import os
 import matplotlib.animation as mpla
 import matplotlib.pyplot as plt
-
+import time
 if "Animate" in os.getcwd():
     log_file = os.getcwd() + "\\Animated_Logs\\animation.txt"
 else:
@@ -46,34 +46,51 @@ def _plot(i):
         for name in names:
             plots[name] = []
         line = log.readline()
+        skipped = 0
         while line:
             values = line.split(",")
             i = 0
+
             for names in plots.keys():
+                try:
+                    k = int(values[i])
+                except ValueError:
+                    skipped += 1
+                    continue
                 plots[names].append(int(values[i]))
                 i += 1
             line = log.readline()
             j += 1
 
     y = []
+    j = j - skipped
     for i in range(0, j):
         y.append(i)
 
     sets = []
     ax.clear()
-    for name, chips_array in plots.items():
-        sets.append(y)
-        sets.append(chips_array)
-        ax.plot(y, chips_array, label=name)
-    ax.legend(bbox_to_anchor=(0, 1, 1, .1), ncol=2, mode="expand", loc="lower left")
-    fig.savefig("figure.pdf")
-
+    try:
+        for name, chips_array in plots.items():
+            sets.append(y)
+            sets.append(chips_array)
+            ax.plot(y, chips_array, label=name)
+        ax.legend(bbox_to_anchor=(0, 1, 1, .1), ncol=2, mode="expand", loc="lower left")
+        fig.savefig("figure.pdf")
+    except ValueError:
+        pass
 
 def animate():
     anim = mpla.FuncAnimation(fig, _plot, interval=500)
     fig.show()
     plt.show()
+    return anim
 
 
 if __name__ == '__main__':
-    animate()
+    anim = None
+    while True:
+        try:
+            anim = animate()
+        except Exception:
+            time.sleep(5)
+            pass
