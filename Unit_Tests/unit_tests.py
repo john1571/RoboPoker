@@ -74,13 +74,18 @@ def hands_equal(hand1_value, hand2_value):
 
 def run_tests():
     test_rounds()
-    test_value('pair_twos', [300, 2, 0, 0, 0, 0], ['2h', '2c'])
     test_value('3-high', [3, 2, 0, 0, 0, 0], ['3h', '2h'])
     test_value('4-high', [4, 2, 0, 0, 0, 0], ['4h', '2h'])
-    test_value('flush', [700, 12, 7, 6, 3, 2], ['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
-    test_value('four-of-a-kind', [900, 7, 0, 0, 0, 0], ['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
-    test_value('straight', [600, 6, 0, 0, 0, 0], ['3h', '2h', '4c', '5d', '6d'])
+    test_value('pair_twos', [300, 2, 0, 0, 0, 0], ['2h', '2c'])
+    test_value('two_pair', [400, 3, 2, 0, 0, 0], ['2h', '2c', '3d', '3h'])
     test_value('set', [500, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '4c', '3s'])
+    test_value('straight', [600, 6, 0, 0, 0, 0], ['3h', '2h', '4c', '5d', '6d'])
+    test_value('flush', [700, 12, 7, 6, 3, 2], ['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
+    test_value('fll house', [800, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '3c', '2d', 'Ts', '7h'])
+    test_value('four-of-a-kind', [900, 7, 0, 0, 0, 0], ['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
+    test_value('Straight flush', [1300, 9, 0, 0, 0, 0], ['8h', '7h', '6h', '5h', '9h', 'Ts', '7s'])
+    test_value('Straight flush', [1300, 14, 0, 0, 0, 0], ['Kh', 'Qh', 'Jh', 'Th', 'Ah', 'Ts', '7s'])
+    test_value('Straight flush', [1300, 5, 0, 0, 0, 0], ['Ah', '5h', '4h', '3h', '2h', 'Ts', '7s'])
 
     assert hands_equal(b.value_of(['9h', '2h', 'Qh', '4d', '6h', 'Th', '7h']),
                        b.value_of(['9h', '3h', 'Qh', 'Ad', '6h', 'Th', '7h']))
@@ -90,6 +95,13 @@ def run_tests():
     four_value = b.value_of(['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
     flush_value = b.value_of(['3h', '2h', 'Qh', '4h', '6h', 'Ts', '7d'])
     assert four_value > flush_value
+    assert flush_Q_7_6_3_2 == flush_Q_7_6_3_2
+    low_straight = b.value_of(['5h', '4d', '3c', '2s', 'Ah', '8h'])
+    straight_six_to_two = b.value_of(['5h', '4d', '3c', '2s', '6h', '8h'])
+    high_straight = b.value_of(['Ah', 'Kd', 'Qh', 'Jd', 'Ts', '8h'])
+    assert straight_six_to_two > low_straight
+    assert high_straight > straight_six_to_two
+    assert high_straight > low_straight
 
 
 HEART = '♥'

@@ -301,7 +301,7 @@ class Hand:
         return None
 
     def has_straight(self):
-        if '10' in self.value_dictionary.keys():
+        if 'T' in self.value_dictionary.keys():
             highstart = self.march_list(['9', '8', '7', '6'], False, 10)
             highend = self.march_list(['J', 'Q', 'K', 'A'], True, 10)
             if (highend - highstart) >= 4:
@@ -346,14 +346,15 @@ def march_list(array, list, up, start):
 
 
 def straight_in_array(array):
-    if '10' in array:
-        highstart = march_list(array, ['9', '8', '7', '6'], False, 10)
-        highend = march_list(array, ['J', 'Q', 'K', 'A'], True, 10)
+    if 10 in array:
+        highstart = march_list(array, [9, 8, 7, 6], False, 10)
+        highend = march_list(array, [11, 12, 13, 14], True, 10)
         if (highend - highstart) >= 4:
             return highend
-    if '5' in array:
-        lowstart = march_list(array, ['4', '3', '2', 'A'], False, 5)
-        lowend = march_list(array, ['6', '7', '8', '9'], True, 5)
+    if 5 in array:
+        lowstart = march_list(array, [4, 3, 2, 14], False, 5)
+        lowend = march_list(array, [6, 7, 8, 9], True, 5)
+
         if (lowend - lowstart) >= 4:
             return lowend
     return None
