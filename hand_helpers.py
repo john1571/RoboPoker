@@ -153,12 +153,13 @@ class Hand:
         if len(self.cards) <= 0:
             return []
         flush_cards = self.has_flush()
-        if flush_cards and straight_in_array(flush_cards):
-            values = sorted(flush_cards, reverse=True)
-            values.insert(0, STRAIGHT_FLUSH)
-            self.hand_value = values
-            self.has_straight_flush = True
-            return self.hand_value
+        if flush_cards:
+            high_card = straight_in_array(flush_cards)
+            if high_card:
+                self.hand_value[0] = STRAIGHT_FLUSH
+                self.hand_value[1] = high_card
+                self.has_straight_flush = True
+                return self.hand_value
         if len(self.four) > 0:
             self.hand_value[0] = FOUR_OF_A_KIND
             self.hand_value[1] = self.four[0]
@@ -168,7 +169,7 @@ class Hand:
             self.hand_value[1] = max(self.has_set())
             return self.hand_value
         if flush_cards:
-            self.hand_value = sorted(flush_cards, reverse=True)
+            self.hand_value = sorted(flush_cards, reverse=True)[:5]
             self.hand_value.insert(0, FLUSH)
             return self.hand_value
         if self.has_straight():

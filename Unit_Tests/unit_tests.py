@@ -53,6 +53,24 @@ def test_rounds():
         test_round(dict, betting, expected)
 
 
+def hands_equal(hand1_value, hand2_value):
+    #hand1_value = hand1.get_value()
+    #hand2_value = hand2.get_value()
+    if hand1_value > hand2_value:
+        print("hand 1:")
+        print(hand1_value)
+        print("is greater than hand 2:")
+        print(hand2_value)
+        return False
+    elif hand2_value > hand1_value:
+        print("hand 2:")
+        print(hand2_value)
+        print("is greater than hand 1:")
+        print(hand1_value)
+        return False
+    else:
+        return True
+
 
 def run_tests():
     test_rounds()
@@ -64,6 +82,8 @@ def run_tests():
     test_value('straight', [600, 6, 0, 0, 0, 0], ['3h', '2h', '4c', '5d', '6d'])
     test_value('set', [500, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '4c', '3s'])
 
+    assert hands_equal(b.value_of(['9h', '2h', 'Qh', '4d', '6h', 'Th', '7h']),
+                       b.value_of(['9h', '3h', 'Qh', 'Ad', '6h', 'Th', '7h']))
     flush_Q_7_6_3_2 = b.value_of(['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
     flush_Q_6_4_3_2 = b.value_of(['3h', '2h', 'Qh', '4h', '6h', 'Ts', '7d'])
     assert flush_Q_7_6_3_2 > flush_Q_6_4_3_2
