@@ -24,8 +24,9 @@ def get_betting_round_pot(players):
         pot += player.chips_in_round
     return pot
 
+
 def get_winners(players, rewarded_players):
-    best_hand_value = 0
+    best_hand_value = [0]
     winners = []
     for player in players:
         if player.name in rewarded_players:

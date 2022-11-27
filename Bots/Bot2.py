@@ -4,11 +4,12 @@ import random
 
 class Bot2(bp.Player):
     def act(self, bet, my_bet, table=None, actions=None, pot=None,  players_in_round=None):  # actions = dictionary: name:(action, amount)
-        if self.hand.get_value() > 310:
+        sum_value = sum(self.hand.get_value())
+        if sum_value >= 300:
             if bet > 20:
                 return bet*2
             return 40
-        elif self.hand.get_value() < 10:
+        elif sum_value < 10:
             return None
         if bet > 0:
             if my_bet != 0 and bet > my_bet * 5:

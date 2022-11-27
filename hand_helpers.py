@@ -83,6 +83,7 @@ class Hand:
         self.has_four_of_a_kind = False
         self.value = 0
         self.value_dictionary = {}
+        self.hand_value = [0, 0, 0, 0, 0, 0] # hand combination value, followed by 5 card values in order
 
     def add_card(self, card, table=None):
         if card in self.cards:
@@ -92,13 +93,13 @@ class Hand:
             self.cards_in_hand.append(card)
 
         if card.suit == p.HEART:
-            self.hearts.append(card.rank)
+            self.hearts.append(card.value)
         elif card.suit == p.DIAMOND:
-            self.diamonds.append(card.rank)
+            self.diamonds.append(card.value)
         elif card.suit == p.SPADE:
-            self.spades.append(card.rank)
+            self.spades.append(card.value)
         else:
-            self.clubs.append(card.rank)
+            self.clubs.append(card.value)
         if card.value not in self.singles:
             self.singles.append(card.value)
         elif card.value not in self.pair:
@@ -145,40 +146,41 @@ class Hand:
         return print_string
 
     def get_value(self):
-        self.value = 0
+        other_values = []
+        for card in self.cards:
+            other_values.append(card.value)
+        other_values = sorted(other_values, reverse=True)
         if len(self.cards) <= 0:
-            return 0
+            return []
         flush_cards = self.has_flush()
         if flush_cards and straight_in_array(flush_cards):
-            self.value += STRAIGHT_FLUSH
+            values = sorted(flush_cards, reverse=True)
+            values.insert(0, STRAIGHT_FLUSH)
+            self.hand_value = values
             self.has_straight_flush = True
-            for value in flush_cards:
-                self.value += p.rank_to_value(value)
-            return self.value
-
+            return self.hand_value
         if len(self.four) > 0:
-            self.value += FOUR_OF_A_KIND
-            self.value += self.four[0]
-            return self.value
+            self.hand_value[0] = FOUR_OF_A_KIND
+            self.hand_value[1] = self.four[0]
+            return self.hand_value
         if self.has_full_house():
-            self.value += FULL_HOUSE
-            self.value += self.has_full_house()
-            return self.value
+            self.hand_value[0] = FULL_HOUSE
+            self.hand_value[1] = max(self.has_set())
+            return self.hand_value
         if flush_cards:
-            self.value += FLUSH
-            for value in flush_cards:
-                self.value += p.rank_to_value(value)
-            return self.value
+            self.hand_value = sorted(flush_cards, reverse=True)
+            self.hand_value.insert(0, FLUSH)
+            return self.hand_value
         if self.has_straight():
-            self.value += STRAIGHT
-            self.value += self.has_straight()
-            return self.value
+            self.hand_value[0] = STRAIGHT
+            self.hand_value[1] = self.has_straight()
+            return self.hand_value
         if self.has_set():
             sets = self.has_set()
             high_set_value = max(sets)
-            self.value += SET
-            self.value += high_set_value
-            return self.value
+            self.hand_value[0] = SET
+            self.hand_value[1] = high_set_value
+            return self.hand_value
         if self.has_pair():
             pairs = self.has_pair()
             if len(pairs) > 1:
@@ -189,15 +191,36 @@ class Hand:
                         if x != other_pair_value and x != high_pair_value:
                             other_pair_value = x
                             break
-                self.value += TWO_PAIR
-                self.value += high_pair_value
-                self.value += other_pair_value
-                return self.value
-            self.value = PAIR
-            self.value += self.has_pair()[0]
-            return self.value
+                self.hand_value[0] = TWO_PAIR
+                self.hand_value[1] = high_pair_value
+                self.hand_value[2] = other_pair_value
+                for value in other_values:
+                    if value in self.hand_value:
+                        continue
+                    self.hand_value[3] = value
+                    break
+                return self.hand_value
+            self.hand_value[0] = PAIR
+            self.hand_value[1] = self.has_pair()[0]
+            count = 2
+            for value in other_values:
+                if count >= len(self.hand_value):
+                    break
+                if value in self.hand_value or value == 0:
+                    continue
+                self.hand_value[count] = value
+                count += 1
+            return self.hand_value
         else:
-            return max(x.value for x in self.cards)
+            count = 0
+            for value in other_values:
+                if count >= len(self.hand_value):
+                    break
+                if value in self.hand_value or value == 0:
+                    continue
+                self.hand_value[count] = value
+                count += 1
+            return self.hand_value
 
     def show_for_print(self):
         show_string = ""

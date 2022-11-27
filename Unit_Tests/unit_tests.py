@@ -10,8 +10,10 @@ def test_value(name, expected_value, cards):
     for card in cards:
         hand.add_card(hand_helpers.Shorthand[card])
     if expected_value != hand.get_value():
-        print("expected: %i" % expected_value)
-        print("actual: %i" % hand.get_value())
+        print("expected: ", end="")
+        print(expected_value)
+        print("actual: ", end="")
+        print(hand.get_value())
         print(i)
         return False
     return True
@@ -54,13 +56,13 @@ def test_rounds():
 
 def run_tests():
     test_rounds()
-    test_value('pair_twos', 302, ['2h', '2c'])
-    test_value('3-high', 3, ['3h', '2h'])
-    test_value('4-high', 4, ['4h', '2h'])
-    test_value('flush', 730, ['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
-    test_value('four-of-a-kind', 907, ['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
-    test_value('straight', 606, ['3h', '2h', '4c', '5d', '6d'])
-    test_value('set', 503, ['3h', '2h', '3d', '4c', '3s'])
+    test_value('pair_twos', [300, 2, 0, 0, 0, 0], ['2h', '2c'])
+    test_value('3-high', [3, 2, 0, 0, 0, 0], ['3h', '2h'])
+    test_value('4-high', [4, 2, 0, 0, 0, 0], ['4h', '2h'])
+    test_value('flush', [700, 12, 7, 6, 3, 2], ['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
+    test_value('four-of-a-kind', [900, 7, 0, 0, 0, 0], ['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
+    test_value('straight', [600, 6, 0, 0, 0, 0], ['3h', '2h', '4c', '5d', '6d'])
+    test_value('set', [500, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '4c', '3s'])
 
     flush_Q_7_6_3_2 = b.value_of(['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
     flush_Q_6_4_3_2 = b.value_of(['3h', '2h', 'Qh', '4h', '6h', 'Ts', '7d'])
