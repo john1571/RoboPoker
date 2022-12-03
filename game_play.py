@@ -29,7 +29,7 @@ def get_winners(players, rewarded_players):
     best_hand_value = [0]
     winners = []
     for player in players:
-        if player.name in rewarded_players:
+        if player in rewarded_players:
             continue
         if player.folded:
             continue
@@ -41,85 +41,79 @@ def get_winners(players, rewarded_players):
     return winners
 
 
-def payout_internal(players, winners):
-    num_split = len(winners)
-    sorted_winners = sort_winners(winners)
-    i = 0
-    while i < len(sorted_winners):
-        winner = sorted_winners[i]
-        for player in players:
-            if player is winner:
-                continue
-            if round(player.chips_in_pot/num_split) > winner.chips_in_pot:
-                winner.chips += round(winner.chips_in_pot/num_split)
-                player.chips_in_pot -= round(winner.chips_in_pot/num_split)
-            else:
-                winner.chips += round(player.chips_in_pot/num_split)
-                player.chips_in_pot -= round(player.chips_in_pot/num_split)
-        winner.chips += round(winner.chips_in_pot/num_split)
-        winner.chips_in_pot -= round(winner.chips_in_pot/num_split)
-
-        i += 1
-        num_split -= 1
-    rewarded = []
-    for player in winners:
-        rewarded.append(player.name)
-    return rewarded
-
-
-def payout(players):
-    starting_total = 0
+def check_side_pot(players, winner_chips_in_pot):
+    side_pot = 0
     for player in players:
-        starting_total += player.chips
-    starting_total += get_current_pot(players)
-    loc_players = players
+        if player.chips_in_pot > winner_chips_in_pot:
+            side_pot += winner_chips_in_pot
+        else:
+            side_pot += player.chips_in_pot
+    return side_pot
+
+
+def get_lowest_winner(players, winners):
+    side_pots = {}
+    for winner in winners:
+        side_pots[check_side_pot(players, winner.chips_in_pot)] = winner
+    if len(side_pots) == 1:
+        return None
+    if min(side_pots.keys()) == max(side_pots.keys()) and min(side_pots.keys()) == get_current_pot(players):
+        return None
+    return side_pots[min(side_pots.keys())]
+
+
+def distribute_pot(pot, winners):
+    won = round(pot / len(winners))
+    for winner in winners:
+        winner.chips += won
+        pot -= won
+
+    while pot > 1:
+        for winner in winners:
+            winner.chips += 1
+            pot -= 1
+            if pot == 0:
+                break
+    return
+
+
+def reduce_chips_in_pot(players, amount):
+    for player in players:
+        if player.chips_in_pot > amount:
+            player.chips_in_pot -= amount
+        else:
+            player.chips_in_pot = 0
+
+
+def payout_new(players):
     rewarded_players = []
-    count = 0
-    while get_current_pot(players) > 1:
-        if players[0].chips_in_pot == 5:
-            debug_break = True
-        if count > 1:
-            debug_left = get_current_pot(players)
-        count += 1
-        winners = get_winners(loc_players, rewarded_players)
-        rewarded_players = rewarded_players + payout_internal(players, winners)
-        if winners == []:
-            print(winners)
+    while get_current_pot(players) > 0:
+        winners = get_winners(players, rewarded_players)
+        lowest_winner = get_lowest_winner(players, winners)
+        while lowest_winner:
+            side_pot = check_side_pot(players, lowest_winner.chips_in_pot)
+            distribute_pot(side_pot, winners)
+            reduce_chips_in_pot(players, lowest_winner.chips_in_pot)
+            winners.remove(lowest_winner)
+            rewarded_players.append(lowest_winner)
+            lowest_winner = get_lowest_winner(players, winners)
+        else:
+            if len(winners) > 0:
+                side_pot = check_side_pot(players, winners[0].chips_in_pot)
+                distribute_pot(side_pot, winners)
+                reduce_chips_in_pot(players, winners[0].chips_in_pot)
+        for winner in winners:
+            rewarded_players.append(winner)
+
+        # validation
+        num_players = 1
+        for player in players:
+            if player.folded or player.busted:
+                continue
+            num_players += 1
+        if len(rewarded_players) > num_players:
+            print("rewarded players: ")
             print(rewarded_players)
-            print(count)
-            raise AssertionError
-        if count > 20:
-            print(winners)
-            print(rewarded_players)
-            print(count)
-            raise AssertionError
-    end_total = 0
-    for player in players:
-        end_total += player.chips
-    if end_total != starting_total:
-        if starting_total + 3 <= end_total <= starting_total - 3:  # allow for rounding error
-            print(end_total - starting_total)
-            raise AssertionError("Chips discrepancy detected!")
-    return get_current_pot(players)
-
-
-def sort_winners(winners):
-    huge = 100000
-    dict = {}
-    sorted_winners = []
-    for player in winners:
-        dict[player] = player.chips_in_pot
-        if player.chips_in_pot > huge:
-            huge = player.chips_in_pot * 2
-
-    while len(sorted_winners) < len(winners):
-        for player in winners:
-            if player.chips_in_pot == min(dict.values()):
-                sorted_winners.append(player)
-                dict[player] = huge
-    return sorted_winners
-
-
-
-
-
+            print("num_players")
+            print(num_players)
+            assert False

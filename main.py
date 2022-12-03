@@ -140,7 +140,7 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         bet(round_num, players, dealer_num, blind, _Table)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     log_pot = gp.get_current_pot(players)
-    pot = gp.payout(players)
+    pot = gp.payout_new(players)
     Logging.log_chips(all_players, _Table, log_pot)
     CI.print_status(round_num, all_players, None, _Table, "win_pause")
 
