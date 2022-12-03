@@ -112,7 +112,7 @@ class Player:
     def get_hand_value(self):
         if self.hand:
             return self.hand.get_value()
-        return 0
+        return [0]
 
     def get_num_cards(self):
         if self.hand:

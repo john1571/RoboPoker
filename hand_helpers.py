@@ -81,7 +81,6 @@ class Hand:
         self.singles = []
         self.has_straight_flush = False
         self.has_four_of_a_kind = False
-        self.value = 0
         self.value_dictionary = {}
         self.hand_value = [0, 0, 0, 0, 0, 0] # hand combination value, followed by 5 card values in order
 
