@@ -99,6 +99,9 @@ def run_tests():
     low_straight = b.value_of(['5h', '4d', '3c', '2s', 'Ah', '8h'])
     straight_six_to_two = b.value_of(['5h', '4d', '3c', '2s', '6h', '8h'])
     high_straight = b.value_of(['Ah', 'Kd', 'Qh', 'Jd', 'Ts', '8h'])
+    full_house_kickers = b.value_of(['Kh', '6s', '3d', '3s', '4c', '4s', '4d'])
+    full_house_better = b.value_of(['5h', '5d', '3d', '3s', '4c', '4s', '4d'])
+    #assert full_house_better > full_house_kickers
     assert straight_six_to_two > low_straight
     assert high_straight > straight_six_to_two
     assert high_straight > low_straight

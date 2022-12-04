@@ -75,7 +75,7 @@ def done_betting(players):
         return True
     bets = []
     for player in players:
-        if player.folded or player.all_in or player.busted:
+        if player.folded or player.busted:
             continue
         bets.append(player.chips_in_round)
     if bets == []:
@@ -179,7 +179,7 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(5)
+    play(10)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

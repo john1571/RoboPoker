@@ -4,7 +4,7 @@ import globals
 def get_current_bet(players):
     current_bet = 0
     for player in players:
-        if player.folded or player.all_in or player.busted:
+        if player.folded or player.busted:
             continue
         if player.chips_in_round > current_bet:
             current_bet = player.chips_in_round
@@ -86,6 +86,16 @@ def reduce_chips_in_pot(players, amount):
 
 
 def payout_new(players):
+    viable = []
+    for player in players:
+        if player.folded or player.busted:
+            continue
+        viable.append(player)
+    if len(viable) == 1:
+        viable[0].chips += get_current_pot(players)
+        return
+
+
     rewarded_players = []
     while get_current_pot(players) > 0:
         winners = get_winners(players, rewarded_players)
