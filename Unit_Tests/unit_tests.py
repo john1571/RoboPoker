@@ -54,8 +54,6 @@ def test_rounds():
 
 
 def hands_equal(hand1_value, hand2_value):
-    #hand1_value = hand1.get_value()
-    #hand2_value = hand2.get_value()
     if hand1_value > hand2_value:
         print("hand 1:")
         print(hand1_value)
@@ -80,12 +78,17 @@ def run_tests():
     test_value('two_pair', [400, 3, 2, 0, 0, 0], ['2h', '2c', '3d', '3h'])
     test_value('set', [500, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '4c', '3s'])
     test_value('straight', [600, 6, 0, 0, 0, 0], ['3h', '2h', '4c', '5d', '6d'])
+    test_value('straight', [600, 14, 0, 0, 0, 0], ['Ah', 'Kh', 'Qc', 'Jd', 'Td', '9s', '8d'])
     test_value('flush', [700, 12, 7, 6, 3, 2], ['3h', '2h', 'Qh', '4d', '6h', 'Ts', '7h'])
-    test_value('fll house', [800, 3, 0, 0, 0, 0], ['3h', '2h', '3d', '3c', '2d', 'Ts', '7h'])
+    test_value('fll house', [800, 3, 3, 3, 2, 2], ['3h', '2h', '3d', '3c', '2d', 'Ts', '7h'])
+    test_value('fll house', [800, 11, 11, 11, 14, 14], ['Jh', 'Ah', 'Jd', 'Jc', 'Ad', 'Ks', 'Kh'])
+    test_value('fll house', [800, 12, 12, 12, 10, 10], ['Qh', 'Th', 'Qd', 'Qc', 'Td', 'Ts', '7h'])
     test_value('four-of-a-kind', [900, 7, 0, 0, 0, 0], ['7h', '7d', '7c', '4d', '6h', 'Ts', '7s'])
+    test_value('four-of-a-kind', [900, 7, 0, 0, 0, 0], ['7h', '7d', '7c', '4d', '4h', 'Ts', '7s'])
     test_value('Straight flush', [1300, 9, 0, 0, 0, 0], ['8h', '7h', '6h', '5h', '9h', 'Ts', '7s'])
     test_value('Straight flush', [1300, 14, 0, 0, 0, 0], ['Kh', 'Qh', 'Jh', 'Th', 'Ah', 'Ts', '7s'])
     test_value('Straight flush', [1300, 5, 0, 0, 0, 0], ['Ah', '5h', '4h', '3h', '2h', 'Ts', '7s'])
+    test_value('Straight flush', [1300, 12, 0, 0, 0, 0], ['Ah', 'Kd', 'Qh', 'Jh', 'Th', '9h', '8h'])
 
     assert hands_equal(b.value_of(['9h', '2h', 'Qh', '4d', '6h', 'Th', '7h']),
                        b.value_of(['9h', '3h', 'Qh', 'Ad', '6h', 'Th', '7h']))
@@ -101,7 +104,7 @@ def run_tests():
     high_straight = b.value_of(['Ah', 'Kd', 'Qh', 'Jd', 'Ts', '8h'])
     full_house_kickers = b.value_of(['Kh', '6s', '3d', '3s', '4c', '4s', '4d'])
     full_house_better = b.value_of(['5h', '5d', '3d', '3s', '4c', '4s', '4d'])
-    #assert full_house_better > full_house_kickers
+    assert full_house_better > full_house_kickers
     assert straight_six_to_two > low_straight
     assert high_straight > straight_six_to_two
     assert high_straight > low_straight

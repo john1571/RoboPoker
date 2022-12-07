@@ -152,6 +152,7 @@ class Hand:
         if len(self.cards) <= 0:
             return []
         flush_cards = self.has_flush()
+        full_house_values = self.has_full_house()
         if flush_cards:
             high_card = straight_in_array(flush_cards)
             if high_card:
@@ -163,9 +164,9 @@ class Hand:
             self.hand_value[0] = FOUR_OF_A_KIND
             self.hand_value[1] = self.four[0]
             return self.hand_value
-        if self.has_full_house():
-            self.hand_value[0] = FULL_HOUSE
-            self.hand_value[1] = max(self.has_set())
+        if full_house_values:
+            self.hand_value = full_house_values
+            self.hand_value.insert(0, FULL_HOUSE)
             return self.hand_value
         if flush_cards:
             self.hand_value = sorted(flush_cards, reverse=True)[:5]
@@ -255,12 +256,19 @@ class Hand:
         sets = self.has_set()
         if not sets:
             return False
-        if len(sets) > 1:
-            set_val = max(sets)
-            return set_val
+        set_value = max(sets)
         if not self.has_pair():
+            return
+        else:
+            pair_value = 0
+            for value in self.has_pair():
+                if value == set_value:
+                    continue
+                if value > pair_value:
+                    pair_value = value
+        if set_value == 0 or pair_value == 0:
             return False
-        return sets[0]
+        return [set_value, set_value, set_value, pair_value, pair_value]
 
     def has_flush(self):
         if len(self.hearts) > 4:
