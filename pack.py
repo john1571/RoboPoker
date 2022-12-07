@@ -67,6 +67,13 @@ class Card:
         else:
             self.color = Colors.cSPADE
 
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __ge__(self, other):
+        return self.value >= other.value
+
+
     def print_with_color(self):
         print(self.color + self.rank + self.suit + Colors.ENDC, end='\t')
 

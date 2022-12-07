@@ -79,8 +79,6 @@ class Hand:
         self.set = []
         self.pair = []
         self.singles = []
-        self.has_straight_flush = False
-        self.has_four_of_a_kind = False
         self.value_dictionary = {}
         self.hand_value = [0, 0, 0, 0, 0, 0] # hand combination value, followed by 5 card values in order
 
@@ -144,84 +142,6 @@ class Hand:
             print(print_string)
         return print_string
 
-    def get_value(self):
-        other_values = []
-        for card in self.cards:
-            other_values.append(card.value)
-        other_values = sorted(other_values, reverse=True)
-        if len(self.cards) <= 0:
-            return []
-        flush_cards = self.has_flush()
-        full_house_values = self.has_full_house()
-        if flush_cards:
-            high_card = straight_in_array(flush_cards)
-            if high_card:
-                self.hand_value[0] = STRAIGHT_FLUSH
-                self.hand_value[1] = high_card
-                self.has_straight_flush = True
-                return self.hand_value
-        if len(self.four) > 0:
-            self.hand_value[0] = FOUR_OF_A_KIND
-            self.hand_value[1] = self.four[0]
-            return self.hand_value
-        if full_house_values:
-            self.hand_value = full_house_values
-            self.hand_value.insert(0, FULL_HOUSE)
-            return self.hand_value
-        if flush_cards:
-            self.hand_value = sorted(flush_cards, reverse=True)[:5]
-            self.hand_value.insert(0, FLUSH)
-            return self.hand_value
-        if self.has_straight():
-            self.hand_value[0] = STRAIGHT
-            self.hand_value[1] = self.has_straight()
-            return self.hand_value
-        if self.has_set():
-            sets = self.has_set()
-            high_set_value = max(sets)
-            self.hand_value[0] = SET
-            self.hand_value[1] = high_set_value
-            return self.hand_value
-        if self.has_pair():
-            pairs = self.has_pair()
-            if len(pairs) > 1:
-                high_pair_value = max(pairs)
-                other_pair_value = min(pairs)
-                if len(pairs) > 2:
-                    for x in pairs:
-                        if x != other_pair_value and x != high_pair_value:
-                            other_pair_value = x
-                            break
-                self.hand_value[0] = TWO_PAIR
-                self.hand_value[1] = high_pair_value
-                self.hand_value[2] = other_pair_value
-                for value in other_values:
-                    if value in self.hand_value:
-                        continue
-                    self.hand_value[3] = value
-                    break
-                return self.hand_value
-            self.hand_value[0] = PAIR
-            self.hand_value[1] = self.has_pair()[0]
-            count = 2
-            for value in other_values:
-                if count >= len(self.hand_value):
-                    break
-                if value in self.hand_value or value == 0:
-                    continue
-                self.hand_value[count] = value
-                count += 1
-            return self.hand_value
-        else:
-            count = 0
-            for value in other_values:
-                if count >= len(self.hand_value):
-                    break
-                if value in self.hand_value or value == 0:
-                    continue
-                self.hand_value[count] = value
-                count += 1
-            return self.hand_value
 
     def show_for_print(self):
         show_string = ""
@@ -229,10 +149,8 @@ class Hand:
             show_string += card.get_with_color() + ' '
         return show_string
 
-    def get_hand_string(self, table):
-        for card in get_table_cards(table):
-            self.add_card(card, table)
-        if self.has_straight_flush:
+    def get_hand_string(self):
+        if self.has_straight_flush():
             return "Str Flsh"
         elif self.has_four():
             return "4-o-kind"
@@ -244,21 +162,55 @@ class Hand:
             return "straight"
         elif self.has_set():
             return "set"
+        elif self.has_two_pair():
+            return "2 pair"
         elif self.has_pair():
-            if len(self.has_pair()) > 1:
-                return "2 pair"
-            else:
-                return "pair"
+            return "pair"
         else:
             return "hi card"
+
+    def get_value(self):
+        value_array =[
+            self.has_straight_flush(),
+            self.has_four_of_a_kind(),
+            self.has_full_house(),
+            self.has_flush(),
+            self.has_straight(),
+            self.has_set(),
+            self.has_two_pair(),
+            self.has_pair(),
+            self.high_card(),
+        ]
+        hand_multiplier = 1000
+        for check_hand in value_array:
+            self.hand_value = check_hand
+            if self.hand_value:
+                self.hand_value = self.hand_value[:5]
+                self.hand_value.insert(0, hand_multiplier)
+                return self.hand_value
+            hand_multiplier -= 100
+        assert False
+
+    def has_straight_flush(self):
+        flush_cards = self.has_flush()
+        if flush_cards:
+            high_card = straight_in_array(flush_cards)
+            if high_card:
+                return [high_card]
+        return None
+
+    def has_four_of_a_kind(self):
+        if len(self.four) > 0:
+            return self.four
+        return None
 
     def has_full_house(self):
         sets = self.has_set()
         if not sets:
-            return False
+            return None
         set_value = max(sets)
         if not self.has_pair():
-            return
+            return None
         else:
             pair_value = 0
             for value in self.has_pair():
@@ -267,29 +219,35 @@ class Hand:
                 if value > pair_value:
                     pair_value = value
         if set_value == 0 or pair_value == 0:
-            return False
-        return [set_value, set_value, set_value, pair_value, pair_value]
+            return None
+        return [set_value, pair_value]
 
     def has_flush(self):
+        cards = []
         if len(self.hearts) > 4:
-            return self.hearts
+            cards = self.hearts
         if len(self.diamonds) > 4:
-            return self.diamonds
+            cards = self.diamonds
         if len(self.spades) > 4:
-            return self.spades
+            cards = self.spades
         if len(self.clubs) > 4:
-            return self.clubs
+            cards = self.clubs
+        if cards:
+            return sorted(cards, reverse=True)
         return None
 
-    def has_pair(self):
-        pairs = []
-        for rank in self.pair:
-            if rank in self.set or self.four:
-                if len(self.set) > 1:
-                    pairs.append(min(self.set))
-                continue
-            pairs.append(rank)
-        return pairs
+    def has_straight(self):
+        if 'T' in self.value_dictionary.keys():
+            highstart = self.march_list(['9', '8', '7', '6'], False, 10)
+            highend = self.march_list(['J', 'Q', 'K', 'A'], True, 10)
+            if (highend - highstart) >= 4:
+                return [highend]
+        if '5' in self.value_dictionary.keys():
+            lowstart = self.march_list(['4', '3', '2', 'A'], False, 5)
+            lowend = self.march_list(['6', '7', '8', '9'], True, 5)
+            if (lowend - lowstart) >= 4:
+                return [lowend]
+        return None
 
     def has_set(self):
         sets = []
@@ -302,23 +260,36 @@ class Hand:
                 sets.append(value)
         return sets
 
-    def has_four(self):
-        if self.four:
-            return self.four[0]
-        return None
+    def has_two_pair(self):
+        if len(self.has_pair()) < 2:
+            return None
+        if len(self.has_pair()) == 2:
+            return sorted(self.has_pair(), reverse=True)
+        pairs = []
+        for pair in self.has_pair():
+            if pair != min(self.has_pair()):
+                pairs.append(pair)
+        assert len(pairs) == 2
+        return sorted(pairs, reverse=True)
 
-    def has_straight(self):
-        if 'T' in self.value_dictionary.keys():
-            highstart = self.march_list(['9', '8', '7', '6'], False, 10)
-            highend = self.march_list(['J', 'Q', 'K', 'A'], True, 10)
-            if (highend - highstart) >= 4:
-                return highend
-        if '5' in self.value_dictionary.keys():
-            lowstart = self.march_list(['4', '3', '2', 'A'], False, 5)
-            lowend = self.march_list(['6', '7', '8', '9'], True, 5)
-            if (lowend - lowstart) >= 4:
-                return lowend
-        return None
+    def has_pair(self):
+        pairs = []
+        for rank in self.pair:
+            if rank in self.set or self.four:
+                if len(self.set) > 1:
+                    pairs.append(min(self.set))
+                continue
+            pairs.append(rank)
+        return pairs
+
+    def high_card(self):
+        card_values = []
+        for card in self.cards:
+            card_values.append(card.value)
+        card_values = sorted(card_values, reverse=True)
+        if not card_values:
+            return [0]
+        return card_values[:5]
 
     def march_list(self, list, up, start):
         found = start
@@ -331,6 +302,8 @@ class Hand:
             else:
                 return found
         return found
+
+
 
     def has_all_values(self, values):
         for val in values:

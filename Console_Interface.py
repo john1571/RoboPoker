@@ -116,7 +116,7 @@ def print_status(round_num, players, current_actor, table, config_section=None):
                             hands_string += pad_string("--")
                         else:
                             player_hands += player.hand.show_for_print() + pad_string("", column_width - 5)
-                            hands_string += pad_string(player.hand.get_hand_string(table))
+                            hands_string += pad_string(player.hand.get_hand_string())
                     else:
                         player_hands += pad_string("")
                     if player.folded:

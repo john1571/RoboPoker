@@ -94,18 +94,6 @@ class Player:
     def add_card(self, card, table=None):
         self.hand.add_card(card, table)
 
-    def status(self, table):
-        self.show_hand(table)
-        print(self.bot_type())
-        print(self.chips)
-
-    def show_hand(self, table, print_now=False):
-        if print_now:
-            print(self.hand.show(table))
-        if self.hand:
-            return self.hand.show(table)
-        return ""
-
     def bot_type(self):
         return "base_player"
 
