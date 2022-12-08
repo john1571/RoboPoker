@@ -79,8 +79,7 @@ class Hand:
         self.set = []
         self.pair = []
         self.singles = []
-        self.value_dictionary = {}
-        self.hand_value = [0, 0, 0, 0, 0, 0] # hand combination value, followed by 5 card values in order
+        self.hand_value = [0] # hand combination value, followed by 5 card values in order
 
     def add_card(self, card, table=None):
         if card in self.cards:
@@ -106,10 +105,6 @@ class Hand:
         else:
             self.four.append(card.value)
 
-        if self.value_dictionary.get(card.rank):
-            self.value_dictionary[card.rank] += 1
-        else:
-            self.value_dictionary[card.rank] = 1
 
     def log(self):
         string = ''
@@ -117,31 +112,6 @@ class Hand:
             string += card.log_string() + " "
         string += ','
         return string
-
-    def show(self, table, print_now=False):
-        print_string = ""
-        print_string += "%s: \t" % self.name
-        for card in self.cards_in_hand:
-            card.print_with_color()
-        for card in get_table_cards(table):
-            self.add_card(card, table)
-        print_string += str(self.get_value()) + '\t'
-        if self.has_flush():
-            print_string += "FLUSH"
-        elif self.has_straight():
-            print_string += "STRAIGHT!"
-        elif self.has_set():
-            print_string += "THREE!"
-        elif len(self.has_pair()) > 1:
-            print_string += "TWO PAIR!"
-        elif self.has_pair():
-            print_string += "PAIR!"
-        else:
-            print_string += "Hi card"
-        if print_now:
-            print(print_string)
-        return print_string
-
 
     def show_for_print(self):
         show_string = ""
@@ -152,7 +122,7 @@ class Hand:
     def get_hand_string(self):
         if self.has_straight_flush():
             return "Str Flsh"
-        elif self.has_four():
+        elif self.has_four_of_a_kind():
             return "4-o-kind"
         elif self.has_full_house():
             return "fll hous"
@@ -194,9 +164,7 @@ class Hand:
     def has_straight_flush(self):
         flush_cards = self.has_flush()
         if flush_cards:
-            high_card = straight_in_array(flush_cards)
-            if high_card:
-                return [high_card]
+            return straight_in_array(flush_cards)
         return None
 
     def has_four_of_a_kind(self):
@@ -237,17 +205,10 @@ class Hand:
         return None
 
     def has_straight(self):
-        if 'T' in self.value_dictionary.keys():
-            highstart = self.march_list(['9', '8', '7', '6'], False, 10)
-            highend = self.march_list(['J', 'Q', 'K', 'A'], True, 10)
-            if (highend - highstart) >= 4:
-                return [highend]
-        if '5' in self.value_dictionary.keys():
-            lowstart = self.march_list(['4', '3', '2', 'A'], False, 5)
-            lowend = self.march_list(['6', '7', '8', '9'], True, 5)
-            if (lowend - lowstart) >= 4:
-                return [lowend]
-        return None
+        value_array = []
+        for card in self.cards:
+            value_array.append(card.value)
+        return straight_in_array(value_array)
 
     def has_set(self):
         sets = []
@@ -291,26 +252,6 @@ class Hand:
             return [0]
         return card_values[:5]
 
-    def march_list(self, list, up, start):
-        found = start
-        for value in list:
-            if value in self.value_dictionary.keys():
-                if up:
-                    found += 1
-                else:
-                    found -= 1
-            else:
-                return found
-        return found
-
-
-
-    def has_all_values(self, values):
-        for val in values:
-            if val not in self.value_dictionary.keys():
-                return False
-        return True
-
 
 def march_list(array, list, up, start):
     found = start
@@ -330,18 +271,10 @@ def straight_in_array(array):
         highstart = march_list(array, [9, 8, 7, 6], False, 10)
         highend = march_list(array, [11, 12, 13, 14], True, 10)
         if (highend - highstart) >= 4:
-            return highend
+            return [highend]
     if 5 in array:
         lowstart = march_list(array, [4, 3, 2, 14], False, 5)
         lowend = march_list(array, [6, 7, 8, 9], True, 5)
-
         if (lowend - lowstart) >= 4:
-            return lowend
+            return [lowend]
     return None
-
-
-def get_table_cards(table):
-    table_cards = []
-    for card in table.cards_on_table:
-        table_cards.append(card)
-    return table_cards
