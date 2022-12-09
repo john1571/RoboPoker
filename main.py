@@ -50,9 +50,9 @@ def blinds(round_num, live_players, dealer_num, big_blind, _Table):
         little_blind_player = live_players[dealer_num + 1]
         big_blind_player = live_players[dealer_num + 2]
         on_index = dealer_num + 3
-    little_blind_player.outer_act(live_players, little_blind)
+    little_blind_player.outer_act(live_players, round_num, forced=little_blind)
     CI.print_status(round_num, live_players, little_blind_player, _Table, "bet_pause")
-    big_blind_player.outer_act(live_players, big_blind)
+    big_blind_player.outer_act(live_players, round_num, forced=big_blind)
     CI.print_status(round_num, live_players, big_blind_player, _Table, "bet_pause")
     return on_index
 
@@ -112,7 +112,7 @@ def bet(round_num, live_players, on_index, big_blind, _Table):
             if done_betting(live_players):
                 break
             continue
-        if under_gun.outer_act(live_players) is None:
+        if under_gun.outer_act(live_players, round_num) is None:
             under_gun.fold()
         CI.print_status(round_num, live_players, under_gun, _Table, "bet_pause")
         debug_pot = gp.get_current_pot(live_players)

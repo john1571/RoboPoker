@@ -38,7 +38,7 @@ def test_round(player_dictionary, betting, ending_chips):  # player {name:{cards
             if bet is None:
                 under_gun.fold()
                 continue
-            under_gun.outer_act(player_array, bet)
+            under_gun.outer_act(player_array, 0, forced=bet)
     gp.payout_new(player_array)
     for name, chips in ending_chips:
         if players[name].chips != chips:

@@ -3,6 +3,7 @@ import globals
 import time
 import Bots.bot_helpers as b
 import game_play as gp
+import json
 
 class Actions:
     fold = 0
@@ -49,7 +50,7 @@ class Player:
         self.folded = True
         return None
 
-    def act(self, bet, my_bet, table=None, actions=None, pot=None, players_in_round=None):
+    def act(self, bet, my_bet, table=None, pot=None, players_in_round=None, json_data=None):
         if bet - my_bet > 50:
             return None
         else:
@@ -62,7 +63,19 @@ class Player:
             return False
         return True
 
-    def outer_act(self, players, forced=0):
+    def to_json(self, hide_cards):
+        return {
+            "name": self.name,
+            "type": self.bot_type(),
+            "hand_cards": [] if hide_cards else [],
+            "chips": self.chips,
+            "chips_in_pot": self.chips_in_pot,
+            "chips_in_round": self.chips_in_round,
+            "first_bet": not self.has_bet,
+            "folded": self.folded,
+        }
+
+    def outer_act(self, players, round_num, forced=0):
         if not self.can_bet(players):
             return 0
         current_bet = gp.get_current_bet(players)
@@ -73,7 +86,24 @@ class Player:
                 continue
             players_in_round += 1
         if forced == 0:
-            new_bet = self.act(current_bet, self.chips_in_round, None, None, pot, players_in_round)
+
+            opponents = []
+            for player in players:
+                if player is self:
+                    continue
+                else:
+                    opponents.append(player.to_json(True))
+            data = {
+                'round_num': round_num,
+                'pot': pot,
+                'bet': current_bet,
+                'call': current_bet - self.chips_in_round,
+                'my_bet': self.chips_in_round,
+                'self': self.to_json(False),
+                'opponents': opponents,
+            }
+            data_string = json.dumps(data)
+            new_bet = self.act(current_bet, self.chips_in_round, None, pot, players_in_round, json_data=data_string)
             self.has_bet = True
         else:
             new_bet = forced

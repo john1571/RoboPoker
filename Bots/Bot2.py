@@ -3,7 +3,7 @@ import random
 
 
 class Bot2(bp.Player):
-    def act(self, bet, my_bet, table=None, actions=None, pot=None,  players_in_round=None):  # actions = dictionary: name:(action, amount)
+    def act(self, bet, my_bet, table=None, pot=None,  players_in_round=None, json_data=None):
         sum_value = sum(self.hand.get_value())
         if sum_value >= 300:
             if bet > 20:
