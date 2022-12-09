@@ -1,10 +1,12 @@
-g_user_playing = False
+USER_PLAYING = False
 
-g_user = None
-g_watch = True
-g_use_suit_symbols = True
-g_use_colors = True
+USER = None
+WATCH = True
+USE_SUIT_SYMBOLS = True
+USE_COLORS = True
 DEAL = 0
 FLOP = 3
 TURN = 1
 RIVER = 1
+
+ANIMATE = True

@@ -4,23 +4,25 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import random
 import Bots.Register as Register
+import Dealer.Parse_Config as Dealer_Config
 import pack
 import Logging
 import game_play as gp
 import globals
 import Console_Interface as CI
 import table as t
+import Animate.animate as ani
+
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
-All_players = []
 
 
 def init_players(num=5, chips=1000):
-    All_players = []
-    for int in range(0, num):
+    all_players = []
+    for j in range(0, num):
         i = random.randint(0, len(Register.register()) - 1)
-        new_player = Register.register()[i](names[int], chips)
-        for player in All_players:
+        new_player = Register.register()[i](names[j], chips)
+        for player in all_players:
             if not player:
                 break
             while player.bot_type() == new_player.bot_type():
@@ -28,150 +30,140 @@ def init_players(num=5, chips=1000):
                     i = 0
                 else:
                     i += 1
-                new_player = Register.register()[i](names[int], chips)
-        All_players.append(new_player)
-    return All_players
+                new_player = Register.register()[i](names[j], chips)
+        all_players.append(new_player)
+    return all_players
 
 
-def update_player_chips(players):
-    All_players = players
+def blinds(round_num, live_players, dealer_num, big_blind, _Table):
+    little_blind = round(big_blind/2)
+    on_index = dealer_num
+    if dealer_num + 1 >= len(live_players):
+        little_blind_player = live_players[0]
+        big_blind_player = live_players[1]
+        on_index = 2
+    elif dealer_num + 2 >= len(live_players):
+        big_blind_player = live_players[0]
+        little_blind_player = live_players[dealer_num + 1]
+        on_index = 1
+    else:
+        little_blind_player = live_players[dealer_num + 1]
+        big_blind_player = live_players[dealer_num + 2]
+        on_index = dealer_num + 3
+    little_blind_player.outer_act(live_players, round_num, forced=little_blind)
+    CI.print_status(round_num, live_players, little_blind_player, _Table, "bet_pause")
+    big_blind_player.outer_act(live_players, round_num, forced=big_blind)
+    CI.print_status(round_num, live_players, big_blind_player, _Table, "bet_pause")
+    return on_index
 
 
-def get_all_players():
-    return All_players
-
-
-def get_players_at_table():
-    players = []
-    for player in All_players:
-        if not player.busted:
-            players.append(player)
-    return players
-
-
-def fold_player(player, bets):
-    if player:
-        player.fold()
-    if player.name in bets.keys():
-        bets.__delitem__(player.name)
-
-
-def betting(players, table, pot, side_pots, dealer, all_players, little_blind=0, big_blind=0):
-    loc_side_pots = {}
-    current_bet = 0
-    bet = 0
-    bets = {}  # player, bet
+def check_for_win(players):
+    remaining = []
     for player in players:
-        bets[player.name] = 0
-    Betting_done = False
-    side_pots = {}
-    round_history = []
-    first_round = True
-    while not Betting_done:
-        for player in players:
-            if first_round:
-                if player is dealer:
-                    first_round = False
-                continue
-            if player.folded or player.all_in or (0 < current_bet == bets[player.name]):
-                continue
+        if player.folded or player.busted:
+            continue
+        else:
+            remaining.append(player)
+    if len(remaining) == 1:
+        return remaining[0]
+    else:
+        return None
 
-            forced = 0
-            if little_blind > 0:
-                forced = little_blind
-                little_blind = 0
-            elif big_blind > 0:
-                forced = big_blind
-                if current_bet < big_blind:
-                    current_bet = big_blind
-                big_blind = 0
 
-            CI.print_status(players, bets, player, pot, table, globals.g_user)
-            bet = player.outer_act(current_bet, bets[player.name], table, round_history, pot, forced)
-            round_history.append((player, bet))
-            if bet is None:
-                fold_player(player, bets)
-                continue
-            pot += bet
-            bets[player.name] += bet
+def done_betting(players):
+    if check_for_win(players):
+        return True
+    bets = []
+    for player in players:
+        if player.folded or player.busted:
+            continue
+        bets.append(player.chips_in_round)
+    if bets == []:
+        debug = bets
 
-            if bets[player.name] < current_bet:
-                if player.all_in:
-                    loc_side_pots[player.name] = bets[player.name]
-                else:
-                    fold_player(player, bets)
-                continue
-            elif bets[player.name] >= current_bet * 2:
-                current_bet = bets[player.name]
-            elif player.all_in:
-                current_bet = bets[player.name]
-                if player.name not in loc_side_pots.keys():
-                    loc_side_pots[player.name] = bets[player.name]
-            elif bets[player.name] != current_bet:
-                assert False
-        Betting_done = True
-        for player in players:
-            if player.folded or player.all_in:
-                continue
-            if bets[player.name] < current_bet:
-                Betting_done = False
+    current_bet = max(bets)
+    for player in players:
+        if player.folded or player.all_in or player.busted:
+            continue
+        if not player.has_bet or current_bet > player.chips_in_round:
+            return False
+    return True
+
+
+def bet(round_num, live_players, on_index, big_blind, _Table):
+    num_players = len(live_players)
+    if on_index >= num_players:
+        on_index = num_players - on_index
+    if big_blind is not None:
+        if on_index == len(live_players) - 2:
+            debug = True
+        on_index = blinds(round_num, live_players, on_index, big_blind, _Table)
+    while True:
+        if done_betting(live_players):
+            break
+        debug_pot = gp.get_current_pot(live_players)
+        debug_bet = gp.get_current_bet(live_players)
+        if on_index >= num_players:
+            on_index = num_players - on_index
+        under_gun = live_players[on_index]
+        on_index += 1
+        if not under_gun.can_bet(live_players):
+            debug_pot = gp.get_betting_round_pot(live_players)
+            if done_betting(live_players):
                 break
-    CI.print_status(all_players, bets, None, pot, table, globals.g_user, 5)
-    for name in loc_side_pots.keys():
-        side_pot_value = 0
-        for bet in bets.values():
-            if bet > loc_side_pots[name]:
-                side_pot_value += loc_side_pots[name]
-            else:
-                side_pot_value += bet
-        side_pots[name] = side_pot_value
-    return pot, side_pots
+            continue
+        if under_gun.outer_act(live_players, round_num) is None:
+            under_gun.fold()
+        CI.print_status(round_num, live_players, under_gun, _Table, "bet_pause")
+        debug_pot = gp.get_current_pot(live_players)
+        if done_betting(live_players):
+            break
+
+round_order = [globals.DEAL, globals.FLOP, globals.TURN, globals.RIVER]
 
 
-round_order = [globals.FLOP, globals.TURN, globals.RIVER]
-
-
-def deal_round(round_num, dealer_num, all_players, pot, little_blind, big_blind):
-    _Table = t.Table(pack.getDeck())
-    side_pots = {}
+def deal_round(round_num, dealer_num, all_players, big_blind):
+    _Table = t.Table(pack.get_deck())
     players = []
     for person in all_players:
         if not person.busted:
             person.new_hand()
             players.append(person)
-    if dealer_num >= len(players):
-        dealer_num = 0
-    dealer = players[dealer_num]
-    _Table.deal(players)
     if round_num > 0 and round_num % 25 == 0:
-        little_blind *= 2
         big_blind *= 2
+
     for action in round_order:
-        pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
+        blind = big_blind if action == globals.DEAL else None
         _Table.next_card(action, players)
-    pot, side_pots = betting(players, _Table, pot, side_pots, dealer, all_players, little_blind, big_blind)
-    payout = pot
-    Logging.Log_chips(all_players, _Table, pot)
-    pot = gp.payout(payout, side_pots, players, _Table)
+        for player in players:
+            player.new_betting_round()
+        bet(round_num, players, dealer_num, blind, _Table)
+        CI.print_status(round_num, all_players, None, _Table, "round_pause")
+    log_pot = gp.get_current_pot(players)
+    pot = gp.payout_new(players)
+    Logging.log_chips(all_players, _Table, log_pot)
+    CI.print_status(round_num, all_players, None, _Table, "win_pause")
 
     for player in players:
         player.new_hand()
     for person in all_players:
         person.update_stats()
-    return pot, little_blind, big_blind
+    return pot, big_blind
 
 
 def play(num_starting_players):
     all_players = init_players(num_starting_players)
     dealer_num = -1
-    little_blind = 5
     big_blind = 10
-    pot = 0
-    for round in range(0, 1000):
+    if globals.ANIMATE:
+        ani.start_log(all_players)
+    for round_num in range(0, 1000):
         dealer_num += 1
-        if round == 0:
-            Logging.Log_chips(all_players, None, 0)
-        pot, little_blind, big_blind = deal_round(round, dealer_num, all_players, pot, little_blind, big_blind)
+        if round_num == 0:
+            Logging.log_chips(all_players, None, 0)
+        elif round_num % 25 == 0:
+            big_blind *= 2
+        deal_round(round_num, dealer_num, all_players, big_blind)
         ended = False
         num_busted = 0
         for player in all_players:
@@ -181,11 +173,13 @@ def play(num_starting_players):
                     ended = True
         if ended:
             break
+        if dealer_num > len(all_players) - num_busted:
+            dealer_num = -1
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(5)
+    play(10)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

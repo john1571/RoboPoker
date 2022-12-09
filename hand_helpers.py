@@ -1,6 +1,6 @@
 import pack as p
 
-STRAIGHT_FLUSH = 1000
+STRAIGHT_FLUSH = 1300
 FOUR_OF_A_KIND = 900
 FULL_HOUSE = 800
 FLUSH = 700
@@ -65,53 +65,22 @@ Shorthand = {
     'As': p.Card('♠', 'A'),
 }
 
+
 class Hand:
     def __init__(self, name):
         self.name = name
         self.cards = []
         self.cards_in_hand = []
-        self.hearts = []
-        self.diamonds = []
-        self.spades = []
-        self.clubs = []
-        self.four = []
-        self.set = []
-        self.pair = []
-        self.singles = []
-        self.has_straight_flush = False
-        self.has_four_of_a_kind = False
-        self.has_full_house = False
-        self.value = 0
-        self.value_dictionary = {}
+        self.card_value_array = []
+        self.hand_value = [0] # hand combination value, followed by 5 card values in order
 
     def add_card(self, card, table=None):
         if card in self.cards:
             return
         self.cards.append(card)
+        self.card_value_array.append(card.value)
         if not table:
             self.cards_in_hand.append(card)
-
-        if card.suit == p.HEART:
-            self.hearts.append(card.rank)
-        elif card.suit == p.DIAMOND:
-            self.diamonds.append(card.rank)
-        elif card.suit == p.SPADE:
-            self.spades.append(card.rank)
-        else:
-            self.clubs.append(card.rank)
-        if card.value not in self.singles:
-            self.singles.append(card.value)
-        elif card.value not in self.pair:
-            self.pair.append(card.value)
-        elif card.value not in self.set:
-            self.set.append(card.value)
-        else:
-            self.four.append(card.value)
-
-        if self.value_dictionary.get(card.rank):
-            self.value_dictionary[card.rank] += 1
-        else:
-            self.value_dictionary[card.rank] = 1
 
     def log(self):
         string = ''
@@ -120,196 +89,153 @@ class Hand:
         string += ','
         return string
 
-    def show(self, table, print_now=False):
-        print_string = ""
-        print_string += "%s: \t" % self.name
-        for card in self.cards_in_hand:
-            card.print_with_color()
-        for card in get_table_cards(table):
-            self.add_card(card, table)
-        print_string += str(self.get_value(table)) + '\t'
-        if self.has_flush():
-            print_string += "FLUSH"
-            #print_string += str(self.has_flush())
-        elif self.has_straight():
-            print_string += "STRAIGHT!"
-            #print(self.has_straight())
-        elif self.has_set():
-            print_string += "THREE!"
-            #print(self.has_set())
-        elif len(self.has_pair()) > 1:
-            print_string += "TWO PAIR!"
-        elif self.has_pair():
-            print_string += "PAIR!"
-            #print(self.has_pair())
-        else:
-            print_string += "Hi card"
-        if print_now:
-            print(print_string)
-        return print_string
-
-    def get_value(self, table=None):
-        self.value = 0
-        if len(self.cards) <= 0:
-            return 0
-        if len(self.four) > 0:
-            self.value += FOUR_OF_A_KIND
-            self.value += self.four[0]
-            return self.value
-        flush_cards = self.has_flush()
-        if flush_cards:
-            self.value += FLUSH
-            if straight_in_array(flush_cards):
-                self.value += STRAIGHT
-                self.has_full_house = True
-            for value in flush_cards:
-                self.value += p.rank_to_value(value)
-            return self.value
-        if self.has_straight():
-            self.value += STRAIGHT
-            self.value += self.has_straight()
-            return self.value
-        if self.has_set():
-            sets = self.has_set()
-            high_set_value = max(sets)
-            if len(sets) > 1:
-                self.has_full_house = True
-                self.value += FULL_HOUSE
-                self.value += high_set_value
-                return self.value
-            elif self.has_pair():
-                pairs = self.has_pair()
-                other_pair_values = []
-                for x in pairs:
-                    if x != high_set_value:
-                        other_pair_values.append(x)
-                if other_pair_values:
-                    self.has_full_house = True
-                    self.value += FULL_HOUSE
-                    self.value += high_set_value
-                    return self.value
-            self.value += SET
-            self.value += high_set_value
-            return self.value
-        if self.has_pair():
-            pairs = self.has_pair()
-            if len(pairs) > 1:
-                high_pair_value = max(pairs)
-                other_pair_value = min(pairs)
-                if len(pairs) > 2:
-                    for x in pairs:
-                        if x != other_pair_value and x != high_pair_value:
-                            other_pair_value = x
-                            break
-                self.value += TWO_PAIR
-                self.value += high_pair_value
-                self.value += other_pair_value
-                return self.value
-            self.value = PAIR
-            self.value += self.has_pair()[0]
-            return self.value
-        else:
-            return max(x.value for x in self.cards)
-
     def show_for_print(self):
         show_string = ""
         for card in self.cards_in_hand:
             show_string += card.get_with_color() + ' '
         return show_string
 
-    def get_hand_string(self, table):
-        for card in get_table_cards(table):
-            self.add_card(card, table)
-        if self.has_straight_flush:
-            return "s.f."
-        elif self.has_four():
-            return " 4-k"
-        elif self.has_full_house:
-            return "full"
+    def get_hand_string(self):
+        if self.has_straight_flush():
+            return "Str Flsh"
+        elif self.has_four_of_a_kind():
+            return "4-o-kind"
+        elif self.has_full_house():
+            return "fll hous"
         elif self.has_flush():
-            return "flsh"
+            return "flush"
         elif self.has_straight():
-            return "strt"
+            return "straight"
         elif self.has_set():
-            return " set"
+            return "set"
+        elif self.has_two_pair():
+            return "2 pair"
         elif self.has_pair():
-            if len(self.has_pair()) > 1:
-                return "2 pr"
-            else:
-                return "pair"
+            return "pair"
         else:
-            return "hi c"
+            return "hi card"
 
-    def has_full_house(self):
-        return self.has_full_house
+    def get_value(self):
+        value_array =[
+            self.has_straight_flush,
+            self.has_four_of_a_kind,
+            self.has_full_house,
+            self.has_flush,
+            self.has_straight,
+            self.has_set,
+            self.has_two_pair,
+            self.has_pair,
+            self.high_card,
+        ]
+        hand_multiplier = 1000
+        for check_hand in value_array:
+            self.hand_value = check_hand()
+            if self.hand_value:
+                self.hand_value = self.hand_value[:5]
+                self.hand_value.insert(0, hand_multiplier)
+                return self.hand_value
+            hand_multiplier -= 100
+        assert False
 
-    def has_flush(self):
-        if len(self.hearts) > 4:
-            return self.hearts
-        if len(self.diamonds) > 4:
-            return self.diamonds
-        if len(self.spades) > 4:
-            return self.spades
-        if len(self.clubs) > 4:
-            return self.clubs
+    def has_straight_flush(self):
+        flush_cards = self.has_flush()
+        if flush_cards:
+            return straight_in_array(flush_cards)
         return None
 
-    def has_pair(self):
-        pairs = []
-        for rank in self.pair:
-            if rank in self.set or self.four:
-                if len(self.set) > 1:
-                    pairs.append(min(self.set))
-                continue
-            pairs.append(rank)
-        return pairs
+    def check_count(self, number):
+        number_matches = []
+        card_value = 14
+        while card_value > 1:
+            if self.card_value_array.count(card_value) >= number:
+                number_matches.append(card_value)
+            card_value -= 1
+        return number_matches or None
 
-    def has_set(self):
-        sets = []
-        for value in self.set:
-            if value in self.four:
-                continue
-            if len(self.set) > 1:
-                sets.append(max(self.set))
+    def has_four_of_a_kind(self):
+        return self.check_count(4)
+
+    def has_full_house(self):
+        sets = self.has_set()
+        if not sets:
+            return None
+        set_value = max(sets)
+        if not self.has_pair():
+            return None
+        else:
+            pair_value = 0
+            for value in self.has_pair():
+                if value == set_value:
+                    continue
+                if value > pair_value:
+                    pair_value = value
+        if set_value == 0 or pair_value == 0:
+            return None
+        return [set_value, pair_value]
+
+    def has_flush(self):
+        hearts = []
+        diamonds = []
+        clubs = []
+        spades = []
+        flush_cards = []
+        # loop through all cards before deciding on flush. To find potential straight flushes.
+        for card in self.cards:
+            if card.suit == p.HEART:
+                hearts.append(card.value)
+            elif card.suit == p.DIAMOND:
+                diamonds.append(card.value)
+            elif card.suit == p.SPADE:
+                spades.append(card.value)
             else:
-                sets.append(value)
-        return sets
+                clubs.append(card.value)
 
-    def has_four(self):
-        if self.four:
-            return self.four[0]
+        if len(spades) > 4:
+            flush_cards = spades
+        if len(diamonds) > 4:
+            flush_cards = diamonds
+        if len(clubs) > 4:
+            flush_cards = clubs
+        if len(hearts) > 4:
+            flush_cards = hearts
+        if flush_cards:
+            return sorted(flush_cards, reverse=True) or None
         return None
 
     def has_straight(self):
-        if '10' in self.value_dictionary.keys():
-            highstart = self.march_list(['9', '8', '7', '6'], False, 10)
-            highend = self.march_list(['J', 'Q', 'K', 'A'], True, 10)
-            if (highend - highstart) >= 4:
-                return highend
-        if '5' in self.value_dictionary.keys():
-            lowstart = self.march_list(['4', '3', '2', 'A'], False, 5)
-            lowend = self.march_list(['6', '7', '8', '9'], True, 5)
-            if (lowend - lowstart) >= 4:
-                return lowend
-        return None
+        value_array = []
+        for card in self.cards:
+            value_array.append(card.value)
+        return straight_in_array(value_array)
 
-    def march_list(self, list, up, start):
-        found = start
-        for value in list:
-            if value in self.value_dictionary.keys():
-                if up:
-                    found += 1
-                else:
-                    found -= 1
-            else:
-                return found
-        return found
+    def has_set(self):
+        return self.check_count(3)
 
-    def has_all_values(self, values):
-        for val in values:
-            if val not in self.value_dictionary.keys():
-                return False
-        return True
+    def has_two_pair(self):
+        if not self.has_pair():
+            return None
+        if len(self.has_pair()) < 2:
+            return None
+        if len(self.has_pair()) == 2:
+            return sorted(self.has_pair(), reverse=True)
+        pairs = []
+        for pair in self.has_pair():
+            if pair != min(self.has_pair()):
+                pairs.append(pair)
+        assert len(pairs) == 2
+        return sorted(pairs, reverse=True)
+
+    def has_pair(self):
+        return self.check_count(2)
+
+    def high_card(self):
+        card_values = []
+        for card in self.cards:
+            card_values.append(card.value)
+        card_values = sorted(card_values, reverse=True)
+        if not card_values:
+            return [0]
+        return card_values[:5]
 
 
 def march_list(array, list, up, start):
@@ -326,21 +252,14 @@ def march_list(array, list, up, start):
 
 
 def straight_in_array(array):
-    if '10' in array:
-        highstart = march_list(array, ['9', '8', '7', '6'], False, 10)
-        highend = march_list(array, ['J', 'Q', 'K', 'A'], True, 10)
+    if 10 in array:
+        highstart = march_list(array, [9, 8, 7, 6], False, 10)
+        highend = march_list(array, [11, 12, 13, 14], True, 10)
         if (highend - highstart) >= 4:
-            return highend
-    if '5' in array:
-        lowstart = march_list(array, ['4', '3', '2', 'A'], False, 5)
-        lowend = march_list(array, ['6', '7', '8', '9'], True, 5)
+            return [highend]
+    if 5 in array:
+        lowstart = march_list(array, [4, 3, 2, 14], False, 5)
+        lowend = march_list(array, [6, 7, 8, 9], True, 5)
         if (lowend - lowstart) >= 4:
-            return lowend
+            return [lowend]
     return None
-
-
-def get_table_cards(table):
-    table_cards = []
-    for card in table.cards_on_table:
-        table_cards.append(card)
-    return table_cards

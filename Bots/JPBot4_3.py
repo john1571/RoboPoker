@@ -2,7 +2,7 @@ from Bots import base_player as bp
 import Bots.bot_helpers as b
 
 
-class Bot4(bp.Player):
+class Bot4_3(bp.Player):
     # bet: current bet at the table.
     # my_bet: amount of money you have already put in the pot
     # actions: a dictionary of actions from other players
@@ -22,6 +22,9 @@ class Bot4(bp.Player):
         def fold():
             return None  # return None to fold
 
+        # eradicate callers
+        if self.chips + my_bet == 1000:
+            return all_in()
         # WAY TOO VERBOSE
         if pot > (bet - my_bet)*20:
             if bet - my_bet > self.chips:
@@ -31,15 +34,15 @@ class Bot4(bp.Player):
                     else:
                         return fold()
                 elif num_cards == 5:
-                    if hand_value > b.value_of(['3h', '3d', '3c']):
+                    if hand_value > b.value_of(['8h', '3d', '3c']):
                         return all_in()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
                         return all_in()
                     else:
-                        return fold()
+                        return call()
             elif bet - my_bet > (self.chips / 2):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -73,12 +76,12 @@ class Bot4(bp.Player):
                         if hand_value > b.value_of(['3h', '3d', '3c']):
                             return raise_x_(2)
                         else:
-                            return fold()
+                            return call()
                     else:
                         if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
                             return raise_x_(2)
                         else:
-                            return fold()
+                            return call()
                 elif bet - my_bet > (self.chips / 2):
                     if num_cards == 2:
                         if hand_value > b.value_of(['Jh', 'Jd']):
@@ -90,17 +93,13 @@ class Bot4(bp.Player):
                     elif num_cards == 5:
                         if hand_value > b.value_of(['8h', '8d', '8c']):
                             return raise_x_(2)
-                        elif hand_value > b.value_of(['Qh', 'Qd']):
-                            return call()
                         else:
-                            return fold()
+                            return call()
                     else:
                         if hand_value > b.value_of(['Qh', 'Qd', 'Qc']):
                             return raise_x_(2)
-                        elif hand_value > b.value_of(['2h', '2d', '2c']):
-                            return call()
                         else:
-                            return fold()
+                            return call()
             elif bet - my_bet > (self.chips / 8):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -116,19 +115,14 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Th', 'Td']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['2h', '2d', '2c']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
-                        return call()
-                    else:
-                        return fold()
+                    else: return call()
             elif bet - my_bet > (self.chips / 16):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -144,19 +138,15 @@ class Bot4(bp.Player):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Th', 'Td']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['2h', '2d', '2c']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
             else:
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -175,7 +165,7 @@ class Bot4(bp.Player):
                     elif hand_value > b.value_of(['Th', 'Td']):
                         return raise_x_(2)
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(5)
@@ -184,24 +174,24 @@ class Bot4(bp.Player):
                     elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
                     else:
-                        return fold()
+                        return call()
         else:
             if bet - my_bet > self.chips:
                 if num_cards == 2:
                     if hand_value > b.value_of(['6h', '6d']):
                         return all_in()
                     else:
-                        return fold()
+                        return call()
                 elif num_cards == 5:
                     if hand_value > b.value_of(['3h', '3d', '4c', '4c']):
                         return all_in()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
                         return all_in()
                     else:
-                        return fold()
+                        return call()
             elif bet - my_bet > (self.chips / 2):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -213,34 +203,30 @@ class Bot4(bp.Player):
                 elif num_cards == 5:
                     if hand_value > b.value_of(['8h', '8d', '8c']):
                         return all_in()
-                    elif hand_value > b.value_of(['Qh', 'Qd']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Th', 'Td', 'Tc']):
                         return all_in()
-                    elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
             elif bet - my_bet > (self.chips / 4):
                 if bet - my_bet > self.chips:
                     if num_cards == 2:
                         if hand_value > b.value_of(['6h', '6d']):
                             return raise_x_(2)
                         else:
-                            return fold()
+                            return call()
                     elif num_cards == 5:
                         if hand_value > b.value_of(['3h', '3d', '4c', '4c']):
                             return raise_x_(2)
                         else:
-                            return fold()
+                            return call()
                     else:
                         if hand_value > b.value_of(['Jh', 'Jd', 'Jc']):
                             return raise_x_(2)
                         else:
-                            return fold()
+                            return call()
                 elif bet - my_bet > (self.chips / 2):
                     if num_cards == 2:
                         if hand_value > b.value_of(['Jh', 'Jd']):
@@ -252,17 +238,13 @@ class Bot4(bp.Player):
                     elif num_cards == 5:
                         if hand_value > b.value_of(['8h', '8d', '8c']):
                             return raise_x_(2)
-                        elif hand_value > b.value_of(['Qh', 'Qd']):
-                            return call()
                         else:
-                            return fold()
+                            return call()
                     else:
                         if hand_value > b.value_of(['Qh', 'Qd', 'Qc']):
                             return raise_x_(2)
-                        elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
-                            return call()
                         else:
-                            return fold()
+                            return call()
             elif bet - my_bet > (self.chips / 8):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
@@ -278,26 +260,22 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Th', 'Td']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
                 else:
                     if hand_value > b.value_of(['Qh', 'Jd', 'Th', '9h', '8d']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['3h', '3d', '4c', '4c']):
-                        return call()
                     else:
-                        return fold()
+                        return call()
             elif bet - my_bet > (self.chips / 16):
                 if num_cards == 2:
                     if hand_value > b.value_of(['Jh', 'Jd']):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['5h', '5d']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Ad']):
+                    elif hand_value > b.value_of(['4d']):
                         return call()
                     else:
                         return fold()
@@ -306,7 +284,7 @@ class Bot4(bp.Player):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Qh', 'Qd']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Th', 'Td']):
+                    elif hand_value > b.value_of(['Th']):
                         return call()
                     else:
                         return fold()
@@ -315,7 +293,7 @@ class Bot4(bp.Player):
                         return raise_x_(4)
                     elif hand_value > b.value_of(['Jh', 'Jd', 'Th', 'Td']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
+                    elif hand_value > b.value_of(['3h']):
                         return call()
                     else:
                         return fold()
@@ -338,7 +316,7 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['Th', 'Td']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['5h', '5d']):
+                    elif hand_value > b.value_of(['5d']):
                         return call()
                     else:
                         return fold()
@@ -349,10 +327,10 @@ class Bot4(bp.Player):
                         return raise_x_(3)
                     elif hand_value > b.value_of(['3h', '3d', '4h', '4d']):
                         return raise_x_(2)
-                    elif hand_value > b.value_of(['Jh', 'Jd']):
+                    elif hand_value > b.value_of(['Jd']):
                         return call()
                     else:
                         return fold()
 
     def bot_type(self):
-        return "Bot4"
+        return "Bot4.3"

@@ -1,6 +1,5 @@
-import pack as p
 import hand_helpers as hh
-import math
+import json
 
 def value_of(cards, name='jehosephat'):
     hand = hh.Hand(name)
@@ -12,10 +11,20 @@ def value_of(cards, name='jehosephat'):
 def call(bet, my_bet):
     return bet - my_bet
 
+
 def average(array):
     if len(array) < 1:
         return 0
     return round(sum(array)/len(array))
+
+
+def dictionary_from_json_data(json_data):
+    return json.loads(json_data)
+
+
+def get_required_bet(data):
+    return data['bet'] - data['self']['chips_in_round']
+
 
 class Stats:
     def __init__(self, chips):

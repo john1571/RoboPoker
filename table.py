@@ -1,5 +1,3 @@
-import random
-import Bots.Register as Register
 import globals as g
 
 
@@ -9,8 +7,8 @@ class Table:
         self.cards_on_table = []
 
     def flip(self, num):
-        burned = self.deck.pop(0)
-        for i in range(0,num):
+        self.deck.pop(0)
+        for i in range(0, num):
             self.cards_on_table.append(self.deck.pop(0))
 
     def show_with_color(self):
@@ -35,6 +33,4 @@ class Table:
             self.deal(players)
         else:
             self.flip(action)
-
-
 
