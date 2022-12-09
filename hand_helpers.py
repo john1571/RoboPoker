@@ -117,19 +117,19 @@ class Hand:
 
     def get_value(self):
         value_array =[
-            self.has_straight_flush(),
-            self.has_four_of_a_kind(),
-            self.has_full_house(),
-            self.has_flush(),
-            self.has_straight(),
-            self.has_set(),
-            self.has_two_pair(),
-            self.has_pair(),
-            self.high_card(),
+            self.has_straight_flush,
+            self.has_four_of_a_kind,
+            self.has_full_house,
+            self.has_flush,
+            self.has_straight,
+            self.has_set,
+            self.has_two_pair,
+            self.has_pair,
+            self.high_card,
         ]
         hand_multiplier = 1000
         for check_hand in value_array:
-            self.hand_value = check_hand
+            self.hand_value = check_hand()
             if self.hand_value:
                 self.hand_value = self.hand_value[:5]
                 self.hand_value.insert(0, hand_multiplier)
