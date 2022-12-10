@@ -67,7 +67,7 @@ class Player:
         return {
             "name": self.name,
             "type": self.bot_type(),
-            "hand_cards": [] if hide_cards else [],
+            "hand_cards": [] if hide_cards else self.hand.to_json(),
             "chips": self.chips,
             "chips_in_pot": self.chips_in_pot,
             "chips_in_round": self.chips_in_round,
@@ -86,7 +86,12 @@ class Player:
                 continue
             players_in_round += 1
         if forced == 0:
-
+            # deduce table array:
+            cards_on_table_json = []
+            for card in self.hand.cards:
+                if card in self.hand.cards_in_hand:
+                    continue
+                cards_on_table_json.append(card.to_json_string())
             opponents = []
             for player in players:
                 if player is self:
@@ -95,6 +100,7 @@ class Player:
                     opponents.append(player.to_json(True))
             data = {
                 'round_num': round_num,
+                'table_cards': cards_on_table_json,
                 'pot': pot,
                 'bet': current_bet,
                 'call': current_bet - self.chips_in_round,

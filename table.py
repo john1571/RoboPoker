@@ -26,6 +26,12 @@ class Table:
             show_string += card.log_string() + ','
         return show_string
 
+    def to_string(self):
+        json_data = []
+        for card in self.cards_on_table:
+            json_data.append(card.to_json_string())
+        return json_data
+
     def deal(self, players):
         for i in range(0, 2):
             for player in players:

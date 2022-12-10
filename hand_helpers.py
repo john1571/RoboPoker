@@ -82,6 +82,12 @@ class Hand:
         if not table:
             self.cards_in_hand.append(card)
 
+    def to_json(self):
+        json_array = []
+        for card in self.cards_in_hand:
+            json_array.append(card.to_json_string())
+        return json_array
+    
     def log(self):
         string = ''
         for card in self.cards_in_hand:
