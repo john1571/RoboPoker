@@ -19,19 +19,35 @@ names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 
 
 def init_players(num=5, chips=1000):
     all_players = []
-    for j in range(0, num):
-        i = random.randint(0, len(Register.register()) - 1)
+    j = 0
+    previous_indexes = []
+    # include all required bots
+    for bot in Register.required():
+        i = Register.register().index(bot)
+        if not i:
+            print('Bot found in required array but not included in register.')
+            assert False
+        if i in previous_indexes:
+            print('Bot found in required array twice. ')
+            continue
         new_player = Register.register()[i](names[j], chips)
-        for player in all_players:
-            if not player:
-                break
-            while player.bot_type() == new_player.bot_type():
-                if i == len(Register.register()) - 1:
-                    i = 0
-                else:
-                    i += 1
-                new_player = Register.register()[i](names[j], chips)
+        previous_indexes.append(i)
         all_players.append(new_player)
+        j += 1
+
+    # randomly fill in for the rest of the bots.
+    if len(Register.register()) < num:
+        num = len(Register.register())
+    while len(all_players) < num:
+        i = random.randint(0, len(Register.register()) - 1)
+        while i in previous_indexes:
+            i = random.randint(0, len(Register.register()) - 1)
+        previous_indexes.append(i)
+
+        new_player = Register.register()[i](names[j], chips)
+        all_players.append(new_player)
+        j += 1
+
     return all_players
 
 

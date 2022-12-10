@@ -22,3 +22,10 @@ def register():
         Bots.JPBot4_2.Bot4_2,
         Bots.JPBot4_3.Bot4_3,
     ]
+
+
+def required():
+    return [
+        # these bots will automatically be added to game
+        Bots.JPBot4_3.Bot4_3
+    ]
