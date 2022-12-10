@@ -6,10 +6,13 @@ class Table:
         self.deck = deck
         self.cards_on_table = []
 
-    def flip(self, num):
+    def flip(self, num, players):
         self.deck.pop(0)
         for i in range(0, num):
-            self.cards_on_table.append(self.deck.pop(0))
+            new_card = self.deck.pop(0)
+            self.cards_on_table.append(new_card)
+            for player in players:
+                player.add_card(new_card, self)
 
     def show_with_color(self):
         show_string = ""
@@ -32,5 +35,5 @@ class Table:
         if action == g.DEAL:
             self.deal(players)
         else:
-            self.flip(action)
+            self.flip(action, players)
 
