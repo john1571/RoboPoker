@@ -4,6 +4,32 @@ import Bots.bot_helpers as b
 # Copy this template to create a new bot.
 # Add your bot class in the Register array.
 # Watch it compete
+'''
+Updated 12/10/2022
+data = {
+    'round_num': round_num,
+    'table_cards': cards_on_table_json,
+    'pot': pot,
+    'bet': current_bet,
+    'call': current_bet - self.chips_in_round,
+    'my_bet': self.chips_in_round,
+    'self': self.bot_data,
+    'opponents': [opponents.bot_data],
+}
+
+bot_data  = {
+    "name": self.name,
+    "type": self.bot_type(),
+    "hand_cards": [] if hide_cards else self.hand.to_json(),
+    "chips": self.chips,
+    "chips_in_pot": self.chips_in_pot,
+    "chips_in_round": self.chips_in_round,
+    "first_bet": not self.has_bet,
+    "folded": self.folded,
+    "busted": self.busted
+}
+'''
+
 
 class YourBotName(bp.Player):
     # bet: current bet at the table.

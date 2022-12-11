@@ -73,9 +73,10 @@ class Player:
             "chips_in_round": self.chips_in_round,
             "first_bet": not self.has_bet,
             "folded": self.folded,
+            "busted": self.busted
         }
 
-    def outer_act(self, players, round_num, forced=0):
+    def outer_act(self, players, round_num, report_big_blind=None, forced=0):
         if not self.can_bet(players):
             return 0
         current_bet = gp.get_current_bet(players)
@@ -101,6 +102,7 @@ class Player:
             data = {
                 'round_num': round_num,
                 'table_cards': cards_on_table_json,
+                'big_blind': report_big_blind,
                 'pot': pot,
                 'bet': current_bet,
                 'call': current_bet - self.chips_in_round,

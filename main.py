@@ -106,7 +106,7 @@ def done_betting(players):
     return True
 
 
-def bet(round_num, live_players, on_index, big_blind, _Table):
+def bet(round_num, live_players, on_index, big_blind, _Table, report_big_blind=None):
     num_players = len(live_players)
     if on_index >= num_players:
         on_index = num_players - on_index
@@ -128,7 +128,7 @@ def bet(round_num, live_players, on_index, big_blind, _Table):
             if done_betting(live_players):
                 break
             continue
-        if under_gun.outer_act(live_players, round_num) is None:
+        if under_gun.outer_act(live_players, round_num, report_big_blind=report_big_blind) is None:
             under_gun.fold()
         CI.print_status(round_num, live_players, under_gun, _Table, "bet_pause")
         debug_pot = gp.get_current_pot(live_players)
@@ -153,7 +153,7 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         _Table.next_card(action, players)
         for player in players:
             player.new_betting_round()
-        bet(round_num, players, dealer_num, blind, _Table)
+        bet(round_num, players, dealer_num, blind, _Table, report_big_blind=big_blind)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     log_pot = gp.get_current_pot(players)
     pot = gp.payout_new(players)
@@ -195,7 +195,7 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(10)
+    play(7)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
