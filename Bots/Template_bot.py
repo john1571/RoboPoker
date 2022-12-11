@@ -57,7 +57,20 @@ class YourBotName(bp.Player):
         # YOUR CODE GOES HERE
         return call()
 
-
     # Change this function to return your bot type
     def bot_type(self):
         return "Your_bot_type"
+
+    def observe_showdown(self, json_data):
+        # If you like you can even use this data to improve your bot.
+        """
+        updated 12/10/22
+        showdown_data = {
+        'round_num': round_num,
+        'table_cards': _Table.to_string(),
+        'big_blind': big_blind,
+        'pot': log_pot,
+        'players': [player_data.to_json_string],
+        'chip_differential': {player_name: player_chip_differential},
+        }"""
+

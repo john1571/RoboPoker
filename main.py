@@ -12,7 +12,7 @@ import globals
 import Console_Interface as CI
 import table as t
 import Animate.animate as ani
-
+import json
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
 
@@ -148,6 +148,9 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
     if round_num > 0 and round_num % 25 == 0:
         big_blind *= 2
 
+    pre_round_chips = {}
+    for player in all_players:
+        pre_round_chips[player.name] = player.chips
     for action in round_order:
         blind = big_blind if action == globals.DEAL else None
         _Table.next_card(action, players)
@@ -156,7 +159,29 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
         bet(round_num, players, dealer_num, blind, _Table, report_big_blind=big_blind)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     log_pot = gp.get_current_pot(players)
+    # report showdown info
+    player_data = []
+    for player in all_players:
+        player_data.append(player.to_json(False))
     pot = gp.payout_new(players)
+
+    post_round_chips = {}
+    for player in all_players:
+        post_round_chips[player.name] = player.chips
+    chip_differential = {}
+    for player in all_players:
+        chip_differential[player.name] = post_round_chips[player.name] - pre_round_chips[player.name]
+    showdown_data = {
+        'round_num': round_num,
+        'table_cards': _Table.to_string(),
+        'big_blind': big_blind,
+        'pot': log_pot,
+        'players': player_data,
+        'chip_differential': chip_differential,
+    }
+
+    for player in all_players:
+        player.observe_showdown(json.dumps(showdown_data))
     Logging.log_chips(all_players, _Table, log_pot)
     CI.print_status(round_num, all_players, None, _Table, "win_pause")
 

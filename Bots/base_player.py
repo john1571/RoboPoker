@@ -56,6 +56,10 @@ class Player:
         else:
             return bet - my_bet
 
+    def observe_showdown(self, json_data):
+        # interesting
+        return
+
     def can_bet(self, players):
         if self.folded or self.all_in or self.busted:
             return False
@@ -64,6 +68,8 @@ class Player:
         return True
 
     def to_json(self, hide_cards):
+        if self.busted or self.folded:
+            hide_cards = True
         return {
             "name": self.name,
             "type": self.bot_type(),

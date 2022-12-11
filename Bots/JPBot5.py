@@ -11,22 +11,6 @@ callers = []
 class JPBot5(bp.Player):
     def act(self, bet, my_bet, table=None, pot=None,  players_in_round=None, json_data=None):
         data = b.dictionary_from_json_data(json_data)
-        opponents = data['opponents']
-        opponent_names = []
-        for opponent in opponents:
-            opponent_names.append(opponent['name'])
-        to_remove = []
-        for name in callers:
-            if name not in opponent_names:
-                to_remove.append(name)
-        for name in to_remove:
-            callers.remove(name)
-        for bot in opponents:
-            if data['round_num'] == 0 and bot['name'] not in callers:
-                callers.append(bot['name'])
-            if bot['name'] in callers:
-                if bot['busted'] or bot['folded']:
-                    callers.remove(bot['name'])
         bet = data['bet']
         my_bet = data['self']['chips_in_round']
         num_cards = self.get_num_cards()
@@ -46,7 +30,7 @@ class JPBot5(bp.Player):
 
         # YOUR CODE GOES HERE
         if len(callers) > 0:
-            if b.value_of(['Th', 'Ts', 'Tc']) <= self.get_hand_value():
+            if b.value_of(['2h', '2s', '2c']) <= self.get_hand_value():
                 return all_in()
         if bet - my_bet > data['big_blind'] * 3:
             return None
@@ -57,3 +41,32 @@ class JPBot5(bp.Player):
     # Change this function to return your bot type
     def bot_type(self):
         return "Call-Killer"
+
+    def observe_showdown(self, json_data):
+        # If you like you can even use this data to improve your bot.
+        '''
+        updated 12/10/22
+        showdown_data = {
+        'round_num': round_num,
+        'table_cards': _Table.to_string(),
+        'big_blind': big_blind,
+        'pot': log_pot,
+        'players': [player_data.to_json_string],
+        'chip_differential': {player_name: player_chip_differential},
+        }'''
+        data = b.dictionary_from_json_data(json_data)
+        players = data['players']
+        if data['round_num'] == 0:
+            for bot in players:
+                if bot['name'] == self.name:
+                    continue
+                callers.append(bot['name'])
+
+        if len(callers) == 0:
+            return
+
+        for player in players:
+            if player['name'] == self.name or player['name'] not in callers:
+                continue
+            if player['folded'] or player['busted']:
+                callers.remove(player['name'])
