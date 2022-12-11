@@ -12,6 +12,7 @@ import globals
 import Console_Interface as CI
 import table as t
 import Animate.animate as ani
+import Stats.Bot_Type_Stats as stats
 import json
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
@@ -213,6 +214,7 @@ def play(num_starting_players):
                 if num_busted == len(all_players) - 1:
                     ended = True
         if ended:
+            stats.log_stats(all_players)
             break
         if dealer_num > len(all_players) - num_busted:
             dealer_num = -1
@@ -220,7 +222,8 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(7)
+    for i in range(10):
+        play(7)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

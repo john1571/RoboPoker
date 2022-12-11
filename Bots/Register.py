@@ -23,6 +23,7 @@ def register():
         Bots.RatioBot.Ratio,
         Bots.JPBot4_2.Bot4_2,
         Bots.JPBot4_3.Bot4_3,
+        Bots.JPBot5.JPBot5,
     ]
 
 

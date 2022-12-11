@@ -1,7 +1,7 @@
 USER_PLAYING = False
 
 USER = None
-WATCH = True
+WATCH = False
 USE_SUIT_SYMBOLS = True
 USE_COLORS = True
 DEAL = 0
@@ -9,4 +9,6 @@ FLOP = 3
 TURN = 1
 RIVER = 1
 
-ANIMATE = True
+ANIMATE = False
+
+LONG_TERM_STATS = True
