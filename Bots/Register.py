@@ -8,6 +8,8 @@ import Bots.Calling_Station
 import Bots.RatioBot
 import Bots.JPBot4_2
 import Bots.JPBot4_3
+import Bots.JPBot5
+
 
 def register():
     return [
@@ -27,5 +29,4 @@ def register():
 def required():
     return [
         # these bots will automatically be added to game
-        Bots.JPBot4_3.Bot4_3
     ]
