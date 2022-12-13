@@ -10,6 +10,8 @@ animation_log = ""
 
 
 def log_chips(players, table, pot):
+    if not globals.LOG_EACH_HAND:
+        return
     if globals.ANIMATE:
         Animate.log_for_animation(players)
     if not os.path.exists(log_file) or os.stat(log_file).st_size == 0:

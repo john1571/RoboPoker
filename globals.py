@@ -12,3 +12,4 @@ RIVER = 1
 ANIMATE = False
 
 LONG_TERM_STATS = True
+LOG_EACH_HAND = False

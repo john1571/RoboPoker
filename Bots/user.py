@@ -2,14 +2,13 @@ from Bots import base_player as bp
 
 
 class User(bp.Player):
-    def act(self, bet, my_bet, table=None, pot=None,  players_in_round=None, json_data=None):
-        print("Pot is %i\nMinimum bet to stay in: %i\nyour chips: %i" % (pot, bet - my_bet, self.chips))
+    def act(self, json_data=None):
         response = input('integer for a bet, "All" for all in, anything else will fold: ')
         if str(response) == "All":
             return self.chips
         try:
             return int(response)
-        except:
+        except ValueError:
             return None
 
     def bot_type(self):

@@ -50,11 +50,12 @@ class Player:
         self.folded = True
         return None
 
-    def act(self, bet, my_bet, table=None, pot=None, players_in_round=None, json_data=None):
-        if bet - my_bet > 50:
+    def act(self, json_data=None):
+        data = b.dictionary_from_json_data(json_data)
+        if data['bet'] - data['my_bet'] > 50:
             return None
         else:
-            return bet - my_bet
+            return data['bet'] - data['my_bet']
 
     def observe_showdown(self, json_data):
         # interesting
@@ -117,7 +118,7 @@ class Player:
                 'opponents': opponents,
             }
             data_string = json.dumps(data)
-            new_bet = self.act(current_bet, self.chips_in_round, None, pot, players_in_round, json_data=data_string)
+            new_bet = self.act(json_data=data_string)
             self.has_bet = True
         else:
             new_bet = forced
