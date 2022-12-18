@@ -34,6 +34,4 @@ def register():
 def required():
     return [
         # these bots will automatically be added to game
-
-        Bots.JPBot5_3.JPBot5_3,
     ]

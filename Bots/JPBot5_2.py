@@ -37,6 +37,8 @@ class JPBot5_2(bp.Player):
             for player in data['opponents']:
                 if player['name'] == self.name or player['folded'] or player['busted']:
                     continue
+                if player['name'] not in average_hand_value.keys():
+                    continue
                 if average_hand_value[player['name']] > self.get_hand_value()[0]:
                     should_raise = False
             if should_raise:

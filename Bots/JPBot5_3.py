@@ -30,10 +30,17 @@ class JPBot5_3(bp.Player):
 
         # YOUR CODE GOES HERE
         if len(callers) > 0:
-            if b.value_of(['2h', '2s', '2c']) <= self.get_hand_value():
-                return max([raise_x_(4), round(self.chips/5)])
-        if len(data['table_cards']) > 2:
+            raise_by = 0
+            for player in data['opponents']:
+                if player['folded']:
+                    continue
+                if player['name'] in callers:
+                    raise_by = player['chips'] + player['chips_in_pot'] - self.chips_in_pot
+            if raise_by > 0 and b.value_of(['2h', '2s', '2c']) <= self.get_hand_value():
+                return max([raise_by, data['bet'] - data['my_bet']])
+        if len(data['table_cards']) > 2 and data['round_num'] > 10:
             should_raise = True
+            raise_by_array = []
             for player in data['opponents']:
                 if player['name'] == self.name or player['folded'] or player['busted']:
                     continue
@@ -41,8 +48,11 @@ class JPBot5_3(bp.Player):
                     continue
                 if average_hand_value[player['name']] > self.get_hand_value()[0]:
                     should_raise = False
-            if should_raise:
-                return max([raise_x_(2), self.chips/10])
+                else:
+                    raise_by_array.append(player['chips'] + player['chips_in_pot'] - self.chips_in_pot)
+            if should_raise and len(raise_by_array) > 0:
+                raise_by_array.append(data['bet'] - data['my_bet'])
+                return max(raise_by_array)
         if bet - my_bet > data['big_blind'] * 3:
             return None
         else:
@@ -65,10 +75,12 @@ class JPBot5_3(bp.Player):
         'players': [player_data.to_json_string],
         'chip_differential': {player_name: player_chip_differential},
         }'''
-        data = b.dictionary_from_json_data(json_data)
 
+        data = b.dictionary_from_json_data(json_data)
         players = data['players']
         if data['round_num'] == 0:
+            callers.clear()
+            average_hand_value.clear()
             for bot in players:
                 if bot['name'] == self.name:
                     continue
