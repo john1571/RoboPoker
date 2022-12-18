@@ -3,6 +3,7 @@ import Bots.bot_helpers as b
 import Bots.base_player as bp
 import hand_helpers
 import game_play as gp
+import main
 import Test_cases as tc
 
 def test_value(name, expected_value, cards):
@@ -32,13 +33,16 @@ def test_round(player_dictionary, betting, ending_chips):  # player {name:{cards
         player_array.append(player)
     for round in betting.keys():
         for name, bet in betting[round]:
-            under_gun = players[name]
-            if under_gun.busted or under_gun.folded or under_gun.all_in:
+            if name is None:
+                for player in player_array:
+                    player.new_betting_round()
                 continue
-            if bet is None:
+            under_gun = players[name]
+            new_bet = under_gun.outer_act(player_array, 0, forced=bet)
+            under_gun.has_bet = True
+            if new_bet is None:
                 under_gun.fold()
                 continue
-            under_gun.outer_act(player_array, 0, forced=bet)
     gp.payout_new(player_array)
     for name, chips in ending_chips:
         if players[name].chips != chips:

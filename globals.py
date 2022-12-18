@@ -1,7 +1,7 @@
 USER_PLAYING = False
 
 USER = None
-WATCH = False
+WATCH = True
 USE_SUIT_SYMBOLS = True
 USE_COLORS = True
 DEAL = 0

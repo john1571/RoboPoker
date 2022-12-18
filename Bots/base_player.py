@@ -66,7 +66,29 @@ class Player:
             return False
         if self.has_bet and self.chips_in_round >= gp.get_current_bet(players):
             return False
-        return True
+        # only remaining
+        remaining = 0
+        for player in players:
+            if player.name == self.name:
+                continue
+            if player.folded or player.busted:
+                continue
+            remaining += 1
+        if remaining < 1:
+            return False
+        has_top_bet = True
+        for player in players:
+            if player.name == self.name:
+                continue
+            if player.chips_in_pot > self.chips_in_pot:
+                return True
+            if self.chips_in_pot == player.chips_in_pot:
+                has_top_bet = False
+        if has_top_bet:
+            return False
+        if not self.has_bet:
+            return True
+        return False
 
     def to_json(self, hide_cards):
         if self.busted or self.folded:
@@ -123,6 +145,7 @@ class Player:
         else:
             new_bet = forced
         if new_bet:
+            new_bet = max(0, new_bet)
             if new_bet >= self.chips:
                 self.all_in = True
                 new_bet = round(self.chips)

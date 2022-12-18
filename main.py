@@ -88,23 +88,11 @@ def check_for_win(players):
 
 
 def done_betting(players):
-    if check_for_win(players):
-        return True
-    bets = []
+    remaining_betters = 0
     for player in players:
-        if player.folded or player.busted:
-            continue
-        bets.append(player.chips_in_round)
-    if bets == []:
-        debug = bets
-
-    current_bet = max(bets)
-    for player in players:
-        if player.folded or player.all_in or player.busted:
-            continue
-        if not player.has_bet or current_bet > player.chips_in_round:
-            return False
-    return True
+        if player.can_bet(players):
+            remaining_betters += 1
+    return remaining_betters == 0
 
 
 def bet(round_num, live_players, on_index, big_blind, _Table, report_big_blind=None):
@@ -222,8 +210,9 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    for i in range(10):
+    for i in range(100):
         play(7)
+        print(i)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
