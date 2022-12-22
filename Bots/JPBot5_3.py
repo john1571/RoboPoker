@@ -56,7 +56,7 @@ class JPBot5_3(bp.Player):
         if bet - my_bet > data['big_blind'] * 3:
             return None
         else:
-            return bet - my_bet
+            return max([bet - my_bet, 5])
 
 
     # Change this function to return your bot type
