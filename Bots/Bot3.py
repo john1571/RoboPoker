@@ -3,7 +3,11 @@ import Bots.bot_helpers as b
 
 
 class Bot3(bp.Player):
-    def act(self, bet, my_bet, table=None, pot=None,  players_in_round=None, json_data=None):
+    def act(self, json_data=None):
+        data = b.dictionary_from_json_data(json_data)
+        bet = data['bet']
+        my_bet = data['my_bet']
+        pot = data['pot']
         def call():
             return bet - my_bet
 

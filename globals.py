@@ -9,4 +9,7 @@ FLOP = 3
 TURN = 1
 RIVER = 1
 
-ANIMATE = True
+ANIMATE = False
+
+LONG_TERM_STATS = True
+LOG_EACH_HAND = False

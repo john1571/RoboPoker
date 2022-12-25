@@ -12,26 +12,43 @@ import globals
 import Console_Interface as CI
 import table as t
 import Animate.animate as ani
-
+import Stats.Bot_Type_Stats as stats
+import json
 
 names = ['Adam', 'Ben', 'Caleb', 'Dan', 'Eli', 'Frank', 'Gad', 'Huz', 'Isaiah', 'John']
 
 
 def init_players(num=5, chips=1000):
     all_players = []
-    for j in range(0, num):
-        i = random.randint(0, len(Register.register()) - 1)
+    j = 0
+    previous_indexes = []
+    # include all required bots
+    for bot in Register.required():
+        i = Register.register().index(bot)
+        if not i:
+            print('Bot found in required array but not included in register.')
+            assert False
+        if i in previous_indexes:
+            print('Bot found in required array twice. ')
+            continue
         new_player = Register.register()[i](names[j], chips)
-        for player in all_players:
-            if not player:
-                break
-            while player.bot_type() == new_player.bot_type():
-                if i == len(Register.register()) - 1:
-                    i = 0
-                else:
-                    i += 1
-                new_player = Register.register()[i](names[j], chips)
+        previous_indexes.append(i)
         all_players.append(new_player)
+        j += 1
+
+    # randomly fill in for the rest of the bots.
+    if len(Register.register()) < num:
+        num = len(Register.register())
+    while len(all_players) < num:
+        i = random.randint(0, len(Register.register()) - 1)
+        while i in previous_indexes:
+            i = random.randint(0, len(Register.register()) - 1)
+        previous_indexes.append(i)
+
+        new_player = Register.register()[i](names[j], chips)
+        all_players.append(new_player)
+        j += 1
+
     return all_players
 
 
@@ -71,26 +88,14 @@ def check_for_win(players):
 
 
 def done_betting(players):
-    if check_for_win(players):
-        return True
-    bets = []
+    remaining_betters = 0
     for player in players:
-        if player.folded or player.busted:
-            continue
-        bets.append(player.chips_in_round)
-    if bets == []:
-        debug = bets
-
-    current_bet = max(bets)
-    for player in players:
-        if player.folded or player.all_in or player.busted:
-            continue
-        if not player.has_bet or current_bet > player.chips_in_round:
-            return False
-    return True
+        if player.can_bet(players):
+            remaining_betters += 1
+    return remaining_betters == 0
 
 
-def bet(round_num, live_players, on_index, big_blind, _Table):
+def bet(round_num, live_players, on_index, big_blind, _Table, report_big_blind=None):
     num_players = len(live_players)
     if on_index >= num_players:
         on_index = num_players - on_index
@@ -112,7 +117,7 @@ def bet(round_num, live_players, on_index, big_blind, _Table):
             if done_betting(live_players):
                 break
             continue
-        if under_gun.outer_act(live_players, round_num) is None:
+        if under_gun.outer_act(live_players, round_num, report_big_blind=report_big_blind) is None:
             under_gun.fold()
         CI.print_status(round_num, live_players, under_gun, _Table, "bet_pause")
         debug_pot = gp.get_current_pot(live_players)
@@ -132,15 +137,40 @@ def deal_round(round_num, dealer_num, all_players, big_blind):
     if round_num > 0 and round_num % 25 == 0:
         big_blind *= 2
 
+    pre_round_chips = {}
+    for player in all_players:
+        pre_round_chips[player.name] = player.chips
     for action in round_order:
         blind = big_blind if action == globals.DEAL else None
         _Table.next_card(action, players)
         for player in players:
             player.new_betting_round()
-        bet(round_num, players, dealer_num, blind, _Table)
+        bet(round_num, players, dealer_num, blind, _Table, report_big_blind=big_blind)
         CI.print_status(round_num, all_players, None, _Table, "round_pause")
     log_pot = gp.get_current_pot(players)
+    # report showdown info
+    player_data = []
+    for player in all_players:
+        player_data.append(player.to_json(False))
     pot = gp.payout_new(players)
+
+    post_round_chips = {}
+    for player in all_players:
+        post_round_chips[player.name] = player.chips
+    chip_differential = {}
+    for player in all_players:
+        chip_differential[player.name] = post_round_chips[player.name] - pre_round_chips[player.name]
+    showdown_data = {
+        'round_num': round_num,
+        'table_cards': _Table.to_string(),
+        'big_blind': big_blind,
+        'pot': log_pot,
+        'players': player_data,
+        'chip_differential': chip_differential,
+    }
+
+    for player in all_players:
+        player.observe_showdown(json.dumps(showdown_data))
     Logging.log_chips(all_players, _Table, log_pot)
     CI.print_status(round_num, all_players, None, _Table, "win_pause")
 
@@ -172,6 +202,7 @@ def play(num_starting_players):
                 if num_busted == len(all_players) - 1:
                     ended = True
         if ended:
+            stats.log_stats(all_players)
             break
         if dealer_num > len(all_players) - num_busted:
             dealer_num = -1
@@ -179,7 +210,9 @@ def play(num_starting_players):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    play(10)
+    for i in range(100):
+        play(7)
+        print(i)
     print("LETS GO")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

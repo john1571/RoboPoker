@@ -16,20 +16,21 @@ else:
         cHEART = ''
         ENDC = ''
 
+suits_printable = {}
 if globals.USE_SUIT_SYMBOLS:
     HEART = '♥'
     CLUB = '♣'
     DIAMOND = '♦'
     SPADE = '♠'
     suits = ['♥', '♣', '♦', '♠']
-    suits_printable = {'♥': 'Hearts', '♣': 'Clubs', '♦': 'Diamonds', '♠': 'Spades'}
+    suits_printable = {'♥': 'h', '♣': 'c', '♦': 'd', '♠': 's'}
 else:
-    HEART = 'H'
-    CLUB = 'C'
-    DIAMOND = 'D'
-    SPADE = 'S'
-    suits = ['H', 'C', 'D', 'S']
-    suits_printable = {'H': 'Hearts', 'C': 'Clubs', 'D': 'Diamonds', 'S': 'Spades'}
+    HEART = 'h'
+    CLUB = 'c'
+    DIAMOND = 'd'
+    SPADE = 's'
+    suits = ['h', 'c', 'd', 's']
+
 
 values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10,
           'J': 11, 'Q': 12, 'K': 13, 'A': 14, }
@@ -82,3 +83,7 @@ class Card:
 
     def log_string(self):
         return self.rank + suits_printable[self.suit]
+
+    def to_json_string(self):
+        suit = self.suit if not suits_printable else suits_printable[self.suit]
+        return self.rank + suit

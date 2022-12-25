@@ -50,32 +50,62 @@ class Player:
         self.folded = True
         return None
 
-    def act(self, bet, my_bet, table=None, pot=None, players_in_round=None, json_data=None):
-        if bet - my_bet > 50:
+    def act(self, json_data=None):
+        data = b.dictionary_from_json_data(json_data)
+        if data['bet'] - data['my_bet'] > 50:
             return None
         else:
-            return bet - my_bet
+            return data['bet'] - data['my_bet']
+
+    def observe_showdown(self, json_data):
+        # interesting
+        return
 
     def can_bet(self, players):
         if self.folded or self.all_in or self.busted:
             return False
         if self.has_bet and self.chips_in_round >= gp.get_current_bet(players):
             return False
-        return True
+        # only remaining
+        remaining = 0
+        for player in players:
+            if player.name == self.name:
+                continue
+            if player.folded or player.busted:
+                continue
+            remaining += 1
+        if remaining < 1:
+            return False
+        has_top_bet = True
+        for player in players:
+            if player.name == self.name:
+                continue
+            if player.chips_in_pot > self.chips_in_pot:
+                return True
+            if self.chips_in_pot == player.chips_in_pot:
+                has_top_bet = False
+        if has_top_bet:
+            return False
+        if not self.has_bet:
+            return True
+        return False
 
     def to_json(self, hide_cards):
+        if self.busted or self.folded:
+            hide_cards = True
         return {
             "name": self.name,
             "type": self.bot_type(),
-            "hand_cards": [] if hide_cards else [],
+            "hand_cards": [] if hide_cards else self.hand.to_json(),
             "chips": self.chips,
             "chips_in_pot": self.chips_in_pot,
             "chips_in_round": self.chips_in_round,
             "first_bet": not self.has_bet,
             "folded": self.folded,
+            "busted": self.busted
         }
 
-    def outer_act(self, players, round_num, forced=0):
+    def outer_act(self, players, round_num, report_big_blind=None, forced=0):
         if not self.can_bet(players):
             return 0
         current_bet = gp.get_current_bet(players)
@@ -86,7 +116,12 @@ class Player:
                 continue
             players_in_round += 1
         if forced == 0:
-
+            # deduce table array:
+            cards_on_table_json = []
+            for card in self.hand.cards:
+                if card in self.hand.cards_in_hand:
+                    continue
+                cards_on_table_json.append(card.to_json_string())
             opponents = []
             for player in players:
                 if player is self:
@@ -95,6 +130,8 @@ class Player:
                     opponents.append(player.to_json(True))
             data = {
                 'round_num': round_num,
+                'table_cards': cards_on_table_json,
+                'big_blind': report_big_blind,
                 'pot': pot,
                 'bet': current_bet,
                 'call': current_bet - self.chips_in_round,
@@ -103,11 +140,12 @@ class Player:
                 'opponents': opponents,
             }
             data_string = json.dumps(data)
-            new_bet = self.act(current_bet, self.chips_in_round, None, pot, players_in_round, json_data=data_string)
+            new_bet = self.act(json_data=data_string)
             self.has_bet = True
         else:
             new_bet = forced
         if new_bet:
+            new_bet = max(0, new_bet)
             if new_bet >= self.chips:
                 self.all_in = True
                 new_bet = round(self.chips)
