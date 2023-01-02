@@ -60,8 +60,11 @@ class Killer_Bot(bp.Player):
             if other_bot['chips'] >= self.chips:
                 IHaveMostChips = False
                 break
-        if IHaveMostChips or num_cards == 2 or hand_value >= b.value_of(['2h', '2d']):
-            return call()
+        if num_cards == 2 or hand_value[0] > b.value_of(data['table_cards'])[0] + 100:
+            if IHaveMostChips:
+                return call()
+            else:
+                return raise_x_(2)
         else:
             return fold()
 

@@ -11,6 +11,7 @@ import Bots.JPBot4_3
 import Bots.JPBot5
 import Bots.JPBot5_2
 import Bots.JPBot5_3
+import Bots.Killer_Bot
 
 
 def register():
@@ -28,10 +29,12 @@ def register():
         Bots.JPBot5.JPBot5,
         Bots.JPBot5_2.JPBot5_2,
         Bots.JPBot5_3.JPBot5_3,
+        Bots.Killer_Bot.Killer_Bot,
     ]
 
 
 def required():
     return [
+        Bots.Killer_Bot.Killer_Bot,
         # these bots will automatically be added to game
     ]
